@@ -18,12 +18,15 @@ from app.services.authenticity_checker import (
 logger = logging.getLogger("memora.authenticity.router")
 router = APIRouter(prefix="/authenticity", tags=["authenticity"])
 
-
 class AuthenticityCheckRequest(BaseModel):
     url: Optional[str] = None
+    job_url: Optional[str] = None
     job_text: Optional[str] = None
+    job_description: Optional[str] = None
     company: Optional[str] = None
+    company_hint: Optional[str] = None
     role_title: Optional[str] = None
+    role_hint: Optional[str] = None
 
 
 @router.post("/check", response_model=AuthenticityReport)
@@ -32,9 +35,11 @@ def check_authenticity(payload: AuthenticityCheckRequest):
     Evaluates a job posting for fraud and legitimacy risk signals.
     Accepts a direct job posting URL or raw text description.
     """
-    job_text = payload.job_text
-    url = payload.url.strip() if payload.url else None
-    company = payload.company
+    job_text = payload.job_text or payload.job_description
+    url = (payload.url or payload.job_url or "").strip() or None
+    company = payload.company or payload.company_hint
+    role_title = payload.role_title or payload.role_hint
+
     role_title = payload.role_title
 
     # 1. If URL provided and no text supplied, auto-fetch
