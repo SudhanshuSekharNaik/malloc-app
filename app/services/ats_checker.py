@@ -326,9 +326,21 @@ def _get_role_classifier_pipeline():
     return pipeline("text-classification", model=ROLE_MODEL_NAME)
 
 
+def _run_with_timeout(func, *args, timeout_sec=2.5, **kwargs):
+    """Executes a function with a timeout, returning None if timed out or failed."""
+    import concurrent.futures
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(func, *args, **kwargs)
+            return future.result(timeout=timeout_sec)
+    except Exception as exc:
+        logger.info("ML check timed out (%ss) or failed: %s. Using fallback.", timeout_sec, exc)
+        return None
+
+
 def run_ml_checks(text: str) -> List[ATSCheckItem]:
     """
-    Executes Layer 2 HuggingFace ML checks with best-effort error handling.
+    Executes Layer 2 HuggingFace ML checks with timeout protection.
     If models fail to load or error out, returns 'unavailable' checks without blocking.
     """
     ml_results = []
@@ -336,7 +348,9 @@ def run_ml_checks(text: str) -> List[ATSCheckItem]:
 
     # 1. Resume NER check (Skills, Designation, Degree extraction)
     try:
-        ner_pipe = _get_ner_pipeline()
+        ner_pipe = _run_with_timeout(_get_ner_pipeline, timeout_sec=2.5)
+        if ner_pipe is None:
+            raise RuntimeError("NER pipeline loading timed out")
         ner_entities = ner_pipe(text_sample)
 
         skills_found = set()
@@ -404,7 +418,9 @@ def run_ml_checks(text: str) -> List[ATSCheckItem]:
 
     # 2. Job Role Classifier check (Coherence and Domain confidence)
     try:
-        classifier = _get_role_classifier_pipeline()
+        classifier = _run_with_timeout(_get_role_classifier_pipeline, timeout_sec=2.5)
+        if classifier is None:
+            raise RuntimeError("Role classifier loading timed out")
         classification = classifier(text_sample)
 
         if classification and isinstance(classification, list):
