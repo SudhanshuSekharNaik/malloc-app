@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>MALLOC() — AI Career & Memory Engine [CORE_OS_v2.4]</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Tailwind CSS & Configuration -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#131318",
+            "surface-container-low": "#0e0e11",
+            "surface-container-lowest": "#09090c",
+            "surface-container-high": "#191920",
+            "surface-container-highest": "#26252f",
+            "background": "#0e0e11",
+            "primary": "#f2afff",
+            "primary-container": "#d953ff",
+            "secondary": "#7df4ff",
+            "secondary-container": "#00eefc",
+            "on-background": "#f0edf0",
+            "on-surface": "#f0edf0",
+            "on-surface-variant": "#d6bfd6",
+            "error": "#ff506e",
+            "warning": "#ffd180",
+            "outline-variant": "rgba(242,175,255,0.18)"
+          },
+          fontFamily: {
+            "display-lg": ["Sora", "sans-serif"],
+            "headline-lg": ["Sora", "sans-serif"],
+            "label-mono": ["JetBrains Mono", "monospace"],
+            "body-md": ["Geist", "Inter", "sans-serif"],
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="/static/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>"/>
+</head>
+
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex overflow-hidden bg-scanlines">
+  
+  <!-- Subtle Ambient Scanline & Grid Drift Layer -->
+  <div class="scanline-overlay bg-scanlines-animated"></div>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+  <!-- SideNavBar -->
+  <nav id="main-sidebar" class="flex flex-col h-full sticky top-0 left-0 w-64 z-40 justify-between shrink-0 select-none shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+    <div class="flex flex-col flex-1 min-h-0">
+      
+      <!-- Brand Header (Fixed layout - No overlapping) -->
+      <div class="p-5 border-b border-outline-variant/30 flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-display-lg text-primary uppercase tracking-tight text-[20px] leading-none text-glow-primary">MALLOC()</h1>
+            <span class="cyber-badge text-[9px] px-1.5 py-0.5">v2.4</span>
+          </div>
+          <p class="font-label-mono text-secondary text-glow-secondary mt-1.5 text-[9.5px] uppercase tracking-widest">CAREER_INTELLIGENCE</p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="btn-switch-user" class="p-1.5 text-on-surface-variant hover:text-primary transition-colors tech-corner" title="Switch User Profile">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+          </button>
+          <button id="btn-close-sidebar" class="md:hidden p-1.5 text-on-surface-variant hover:text-error transition-colors" title="Close Menu">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Menu Tabs -->
+      <div class="py-2 flex flex-col overflow-y-auto no-scrollbar flex-1 nav-menu">
+        <button class="nav-item active w-full text-left" data-tab="tab-dashboard">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+          <span class="flex-1">DASHBOARD_HUB</span>
+          <span class="cyber-badge cyber-badge-cyan">SYS</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-chat">
+          <span class="material-symbols-outlined">smart_toy</span>
+          <span class="flex-1">AI_ASSISTANT</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-memory">
+          <span class="material-symbols-outlined">database</span>
+          <span class="flex-1">MEMORY_VAULT</span>
+          <span class="cyber-badge" id="memory-count-badge">0</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-matcher">
+          <span class="material-symbols-outlined">description</span>
+          <span class="flex-1">RESUME_MATCHER</span>
+          <span class="cyber-badge cyber-badge-cyan">AI</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-ats">
+          <span class="material-symbols-outlined">verified_user</span>
+          <span class="flex-1">ATS_CHECKER</span>
+          <span class="cyber-badge cyber-badge-magenta">AI</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-authenticity">
+          <span class="material-symbols-outlined">security</span>
+          <span class="flex-1">AUTHENTICITY</span>
+          <span class="cyber-badge cyber-badge-cyan">RAG</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-insights">
+          <span class="material-symbols-outlined">domain</span>
+          <span class="flex-1">COMPANY_INSIGHTS</span>
+          <span class="cyber-badge cyber-badge-magenta">ML</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-outreach">
+          <span class="material-symbols-outlined">send</span>
+          <span class="flex-1">APPLY_VIA_EMAIL</span>
+          <span class="cyber-badge cyber-badge-cyan">OAUTH</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-jobs">
+          <span class="material-symbols-outlined">work</span>
+          <span class="flex-1">JOB_TRACKER</span>
+          <span class="cyber-badge cyber-badge-alert hidden" id="jobs-due-badge">0</span>
+        </button>
+
+        <button class="nav-item w-full text-left" data-tab="tab-docs">
+          <span class="material-symbols-outlined">api</span>
+          <span class="flex-1">API_SWAGGER</span>
+        </button>
+      </div>
+
+      <!-- New Session Action Button -->
+      <div class="p-4 border-t border-white/5">
+        <button id="btn-new-chat" class="btn-new-session">
+          <span class="material-symbols-outlined">add_comment</span>
+          <span>NEW_SESSION</span>
+        </button>
+      </div>
+
+      <!-- Footer Telemetry Links -->
+      <div class="sidebar-footer">
+        <a class="sidebar-footer-item" href="/docs" target="_blank">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>DOCS</span>
+        </a>
+        <a class="sidebar-footer-item" href="/health" target="_blank">
+          <span class="material-symbols-outlined">health_and_safety</span>
+          <span>HEALTH</span>
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Main Canvas Area -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+    
+    <!-- TopAppBar -->
+    <header class="flex justify-between items-center px-4 md:px-6 h-14 md:h-16 sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md border-b border-outline-variant/40 shrink-0">
+      <div class="flex items-center gap-2 md:gap-3 min-w-0">
+        <button id="btn-toggle-sidebar" class="md:hidden p-1.5 text-primary hover:bg-primary/10 border border-outline-variant/60 rounded-sm flex items-center justify-center shrink-0" title="Toggle Navigation Menu">
+          <span class="material-symbols-outlined text-[20px]">menu</span>
+        </button>
+        <span class="font-label-mono text-primary text-[14px] font-bold hidden sm:inline">&gt;</span>
+        <h2 class="font-headline-lg text-primary tracking-wider text-[14px] sm:text-[17px] md:text-[19px] text-glow-primary uppercase truncate" id="current-tab-title">
+          TERMINAL_SESSION
+        </h2>
+        <span class="font-label-mono text-[11px] text-on-surface-variant/80 hidden xl:inline truncate" id="current-tab-subtitle">// System initialized. Active memory extraction online.</span>
+      </div>
+
+      <div class="flex items-center gap-5">
+        <!-- Live System Status Indicator -->
+        <div class="hidden sm:flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#00eefc] animate-pulse" id="server-status"></span>
+          <span class="font-label-mono text-secondary text-[11px] font-bold">SYS_NOMINAL</span>
+        </div>
+
+        <!-- Settings Button -->
+        <button id="btn-open-settings" class="px-3 py-1.5 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[11px] uppercase hover:bg-primary/20 transition-all glow-primary flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">settings</span>
+          <span class="hidden md:inline">API_KEY_CFG</span>
+        </button>
+
+        <!-- Active Operator ID -->
+        <div class="hidden md:flex items-center gap-2 pl-3 border-l border-outline-variant/40">
+          <span class="font-label-mono text-[10px] text-on-surface-variant">OP_ID:</span>
+          <span class="font-label-mono text-[11px] text-secondary font-bold" id="user-id-display">loading...</span>
+          <span class="hidden" id="conv-id-display">(new)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Canvas -->
+    <div class="flex-1 overflow-hidden relative">
+      <div class="tabs-container h-full">
+
+        <!-- ================================================================== -->
+        <!-- Tab 0: System Dashboard & Architecture Hub -->
+        <!-- ================================================================== -->
+        <section id="tab-dashboard" class="tab-pane active h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-8 pb-16">
+            
+            <!-- Hero Header Banner -->
+            <div class="bg-surface-container border border-outline-variant p-6 md:p-8 tech-card glow-primary relative overflow-hidden">
+              <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                <div class="space-y-2 max-w-3xl">
+                  <div class="flex items-center gap-2">
+                    <span class="cyber-badge cyber-badge-magenta">SYS_CORE_v2.4</span>
+                    <span class="cyber-badge cyber-badge-cyan">AI CAREER OS</span>
+                    <span class="cyber-badge">86/86 PYTESTS PASSING</span>
+                  </div>
+                  <h1 class="font-display-lg text-primary text-[26px] md:text-[34px] leading-tight text-glow-primary uppercase">
+                    MALLOC() — AI CAREER &amp; MEMORY ENGINE
+                  </h1>
+                  <p class="font-body-md text-on-surface-variant text-[14px] md:text-[15px] leading-relaxed">
+                    An autonomous AI career intelligence system that constructs persistent user representations, evaluates opportunities, audits ATS parseability, shields against job scams, tailors applications, and manages your career pipeline.
+                  </p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+                  <button type="button" onclick="switchTab('tab-chat')" class="px-5 py-3 bg-primary/10 border border-primary text-primary font-label-mono text-[12px] font-bold uppercase tracking-wider hover:bg-primary hover:text-background transition-all glow-primary flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                    <span>LAUNCH AI ASSISTANT</span>
+                  </button>
+                  <button type="button" onclick="switchTab('tab-matcher')" class="px-5 py-3 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[12px] font-bold uppercase tracking-wider hover:bg-secondary hover:text-background transition-all glow-secondary flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">description</span>
+                    <span>MATCH RESUME &amp; AUDIT</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Career Intelligence Pipeline Workflow -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+                <h2 class="font-headline-lg text-[16px] md:text-[18px] text-primary uppercase tracking-wider flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
+                  <span>END-TO-END CAREER INTELLIGENCE PIPELINE</span>
+                </h2>
+                <span class="font-label-mono text-[11px] text-on-surface-variant">// CLICK ANY STAGE TO ENGAGE MODULE</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+                <button type="button" onclick="switchTab('tab-outreach')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-primary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-label-mono font-bold text-[11px] flex items-center justify-center">1</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-primary">Job Ingestion</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">URL / Raw Text</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-outreach')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-primary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-label-mono font-bold text-[11px] flex items-center justify-center">2</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-primary">JD Parsing</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Role / Skills / Recruiter</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-matcher')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-secondary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-secondary/20 text-secondary font-label-mono font-bold text-[11px] flex items-center justify-center">3</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-secondary">Fit Analysis</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Semantic Fit &amp; Gaps</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-ats')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-primary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-label-mono font-bold text-[11px] flex items-center justify-center">4</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-primary">ATS Audit</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Rules + BERT Signals</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-authenticity')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-secondary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-secondary/20 text-secondary font-label-mono font-bold text-[11px] flex items-center justify-center">5</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-secondary">Scam Shield</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">3-Layer Fraud RAG</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-insights')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-primary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-label-mono font-bold text-[11px] flex items-center justify-center">6</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-primary">Company Intel</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Zero-Shot &amp; Sentiment</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-outreach')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-secondary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-secondary/20 text-secondary font-label-mono font-bold text-[11px] flex items-center justify-center">7</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-secondary">AI Outreach</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Anti-Fabrication + Gmail</span>
+                </button>
+
+                <button type="button" onclick="switchTab('tab-jobs')" class="p-3 bg-surface-container border border-outline-variant/60 hover:border-primary tech-card flex flex-col items-center text-center gap-1.5 transition-all hover:scale-[1.02] group">
+                  <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-label-mono font-bold text-[11px] flex items-center justify-center">8</span>
+                  <span class="font-label-mono text-[11px] text-on-surface font-bold group-hover:text-primary">Job Tracker</span>
+                  <span class="text-[9.5px] font-label-mono text-on-surface-variant">Follow-up Timelines</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Core System Modules Grid (7 Modular Feature Cards) -->
+            <div class="space-y-4">
+              <div class="border-b border-outline-variant/30 pb-2">
+                <h2 class="font-headline-lg text-[16px] md:text-[18px] text-secondary uppercase tracking-wider flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary text-[20px]">grid_view</span>
+                  <span>SYSTEM MODULES &amp; CAPABILITIES</span>
+                </h2>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- Card 1: Memory Vault -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-primary/40 bg-primary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-primary text-[22px]">database</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-magenta">PERSISTENT MEMORY</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">Memory Vault</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Automatic background extraction of skills, preferences, and career facts into a persistent user representation with full CRUD management.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-memory')" class="w-full py-2.5 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[11.5px] uppercase font-bold hover:bg-primary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>EXPLORE MEMORIES</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 2: Resume Matcher & Suggestions -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-secondary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-secondary/40 bg-secondary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-secondary text-[22px]">description</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-cyan">SEMANTIC FIT</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">Resume Matcher &amp; Edits</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Deep multi-dimensional fit scoring, skill gap detection, and concrete bullet rewrite suggestions validated against fabrication guardrails.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-matcher')" class="w-full py-2.5 bg-secondary/10 border border-secondary/40 text-secondary font-label-mono text-[11.5px] uppercase font-bold hover:bg-secondary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>RUN FIT ANALYSIS</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 3: ATS Parseability Audit -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-primary/40 bg-primary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-primary text-[22px]">verified_user</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-magenta">BERT TOKENS</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">ATS Parseability Audit</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Deterministic layout and section parser combined with BERT token extraction signals to maximize employer ATS pass rates.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-ats')" class="w-full py-2.5 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[11.5px] uppercase font-bold hover:bg-primary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>CHECK ATS SCORE</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 4: Job Authenticity Shield -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-secondary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-secondary/40 bg-secondary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-secondary text-[22px]">security</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-cyan">3-LAYER SHIELD</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">Job Authenticity Shield</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Scam &amp; phishing protection via rule-based red-flag heuristics, BERT job spam classification, and RAG fraud pattern reasoning.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-authenticity')" class="w-full py-2.5 bg-secondary/10 border border-secondary/40 text-secondary font-label-mono text-[11.5px] uppercase font-bold hover:bg-secondary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>VERIFY JOB POSTING</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 5: Company Intelligence -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-primary/40 bg-primary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-primary text-[22px]">domain</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-magenta">BART &amp; SST-2</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">Company Intelligence</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Zero-Shot size estimation, industry classification, sentiment culture analysis, and tailored interview preparation blueprints.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-insights')" class="w-full py-2.5 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[11.5px] uppercase font-bold hover:bg-primary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>INSPECT COMPANY</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 6: AI Outreach & Gmail -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-secondary flex flex-col justify-between space-y-4">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 border border-secondary/40 bg-secondary/10 flex items-center justify-center rounded-sm">
+                        <span class="material-symbols-outlined text-secondary text-[22px]">send</span>
+                      </div>
+                      <span class="cyber-badge cyber-badge-cyan">OAUTH2 GMAIL</span>
+                    </div>
+                    <div>
+                      <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">AI Outreach &amp; Gmail</h3>
+                      <p class="font-body-md text-on-surface-variant text-[13px] mt-1 leading-relaxed">
+                        Informal JD parsing, anti-fabrication cold email drafting, and real-time Gmail transmission with send-only OAuth2 scoping.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="switchTab('tab-outreach')" class="w-full py-2.5 bg-secondary/10 border border-secondary/40 text-secondary font-label-mono text-[11.5px] uppercase font-bold hover:bg-secondary hover:text-background transition-all flex items-center justify-center gap-1.5">
+                    <span>DRAFT &amp; APPLY</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </button>
+                </div>
+
+                <!-- Card 7: Job Tracker -->
+                <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col justify-between space-y-4 md:col-span-2 lg:col-span-3">
+                  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-[22px]">work</span>
+                        <h3 class="font-headline-lg text-[17px] text-on-surface font-bold">Application Tracker &amp; Follow-up Timelines</h3>
+                      </div>
+                      <p class="font-body-md text-on-surface-variant text-[13px] max-w-2xl leading-relaxed">
+                        End-to-end pipeline management: automatically records sent applications, schedules follow-up alert banners, and tracks your hiring journey.
+                      </p>
+                    </div>
+                    <button type="button" onclick="switchTab('tab-jobs')" class="px-6 py-2.5 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[11.5px] uppercase font-bold hover:bg-primary hover:text-background transition-all shrink-0 flex items-center gap-1.5">
+                      <span>OPEN TRACKER</span>
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Architecture & Engineering Specification -->
+            <div class="bg-surface-container border border-outline-variant p-6 md:p-8 tech-card space-y-6">
+              <div class="border-b border-outline-variant/30 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                <h2 class="font-headline-lg text-[16px] md:text-[18px] text-primary uppercase tracking-wider flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]">architecture</span>
+                  <span>SYSTEM ARCHITECTURE &amp; TECH STACK</span>
+                </h2>
+                <a href="/docs" target="_blank" class="font-label-mono text-[11px] text-secondary hover:underline flex items-center gap-1">
+                  <span>VIEW LIVE OPENAPI DOCS</span>
+                  <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+              </div>
+
+              <!-- Layered Architecture Diagram -->
+              <div class="p-4 md:p-6 bg-surface-container-lowest border border-outline-variant/50 font-mono text-[11px] md:text-[12px] text-on-surface overflow-x-auto leading-relaxed tech-card">
+<pre class="text-secondary/90">
+                 ┌────────────────────────────────────────────────────────┐
+                 │       Web UI (Cyber HUD, Tailwind, Vanilla JS)         │
+                 └───────────────────────────┬────────────────────────────┘
+                                             │  REST / JSON (Async HTTP)
+                 ┌───────────────────────────▼────────────────────────────┐
+                 │         FastAPI Unified Gateway Service (Python 3.11)  │
+                 │   (Pydantic v2 Strict Validation &amp; Modular Routers)    │
+                 └───────────┬───────────────────┬───────────────────┬────┘
+                             │                   │                   │
+            ┌────────────────▼──┐   ┌────────────▼──────┐   ┌────────▼──────────┐
+            │   Memory Engine   │   │   ML Pipelines    │   │    LLM Engine     │
+            │   • Extraction    │   │  • BERT NER/Spam  │   │  • Groq Llama-3.1 │
+            │   • Synthesis     │   │  • BART Zero-Shot │   │  • Anti-Cliché    │
+            │   • CRUD Store    │   │  • DistilBERT SST │   │  • Anti-Fabricate │
+            └────────────────┬──┘   └───────────────────┘   └────────┬──────────┘
+                             │                                       │
+            ┌────────────────▼───────────────────────────────────────▼──────────┐
+            │       Persistence &amp; Integrations (SQLAlchemy ORM + SQLite)         │
+            │     Google OAuth2 (gmail.send) • Faster-Whisper • BLIP Vision     │
+            └───────────────────────────────────────────────────────────────────┘
+</pre>
+              </div>
+
+              <!-- Tech Stack Badges Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">Backend</span>
+                  <span class="font-label-mono text-[12px] text-primary font-bold">FastAPI / Python 3.11</span>
+                </div>
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">LLM Inference</span>
+                  <span class="font-label-mono text-[12px] text-secondary font-bold">Groq Llama-3.1 8B/70B</span>
+                </div>
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">ML Classifiers</span>
+                  <span class="font-label-mono text-[12px] text-primary font-bold">BERT / BART / SST-2</span>
+                </div>
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">Auth &amp; Email</span>
+                  <span class="font-label-mono text-[12px] text-secondary font-bold">OAuth2 (gmail.send)</span>
+                </div>
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">Data Layer</span>
+                  <span class="font-label-mono text-[12px] text-primary font-bold">SQLAlchemy ORM</span>
+                </div>
+                <div class="p-3 bg-surface-container-low border border-outline-variant/40 text-center">
+                  <span class="font-label-mono text-[10px] text-on-surface-variant uppercase block mb-1">Test Coverage</span>
+                  <span class="font-label-mono text-[12px] text-secondary font-bold">86/86 Passing (100%)</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 1: AI Assistant & Chat -->
+        <!-- ================================================================== -->
+        <section id="tab-chat" class="tab-pane h-full">
+          <div class="flex flex-col lg:flex-row h-full overflow-hidden">
+            
+            <!-- Chat Canvas -->
+            <div class="flex-1 flex flex-col h-full bg-transparent relative overflow-hidden">
+              
+              <!-- Telemetry Header Cards -->
+              <div class="p-4 md:p-6 pb-0 grid grid-cols-2 md:grid-cols-4 gap-3 z-10 shrink-0">
+                <div class="cyber-border tech-card p-3 flex flex-col">
+                  <span class="font-label-mono text-on-surface-variant uppercase text-[10px]">Neural Sync</span>
+                  <div class="flex items-end gap-2 mt-1">
+                    <span class="font-headline-lg text-[18px] text-primary leading-none glow-text">98.4%</span>
+                    <span class="material-symbols-outlined text-primary text-sm mb-0.5">trending_up</span>
+                  </div>
+                  <div class="w-full h-1 bg-surface-container mt-2">
+                    <div class="h-full bg-primary" style="width: 98.4%"></div>
+                  </div>
+                </div>
+
+                <div class="cyber-border tech-card p-3 flex flex-col">
+                  <span class="font-label-mono text-on-surface-variant uppercase text-[10px]">Memory Vault Extraction</span>
+                  <div class="flex items-end gap-2 mt-1">
+                    <span class="font-headline-lg text-[18px] text-secondary leading-none glow-cyan">ACTIVE</span>
+                  </div>
+                  <div class="w-full h-1 bg-surface-container mt-2 overflow-hidden relative">
+                    <div class="absolute top-0 left-0 h-full bg-secondary/40 w-full"></div>
+                    <div class="absolute top-0 left-0 h-full bg-secondary w-1/3 animate-pulse"></div>
+                  </div>
+                </div>
+
+                <div class="cyber-border tech-card p-3 flex flex-col hidden md:flex">
+                  <span class="font-label-mono text-on-surface-variant uppercase text-[10px]">Model Core</span>
+                  <div class="flex items-end gap-2 mt-1">
+                    <span class="font-headline-lg text-[18px] text-primary leading-none">Groq/Llama3</span>
+                  </div>
+                  <div class="w-full h-1 bg-surface-container mt-2">
+                    <div class="h-full bg-primary" style="width: 100%"></div>
+                  </div>
+                </div>
+
+                <div class="cyber-border tech-card p-3 flex flex-col hidden md:flex">
+                  <span class="font-label-mono text-on-surface-variant uppercase text-[10px]">Audio/Vision Subsystems</span>
+                  <div class="flex items-end gap-2 mt-1">
+                    <span class="font-headline-lg text-[18px] text-secondary leading-none">Whisper+BLIP</span>
+                  </div>
+                  <div class="w-full h-1 bg-surface-container mt-2">
+                    <div class="h-full bg-secondary" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chat Messages Stream -->
+              <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 no-scrollbar" id="chat-messages">
+                <div class="message assistant-message welcome-message">
+                  <div class="flex gap-3 max-w-3xl w-full">
+                    <div class="w-9 h-9 border border-primary/50 bg-primary/10 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(242,175,255,0.2)] rounded-sm">
+                      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-baseline gap-3 mb-1.5">
+                        <span class="font-label-mono text-[11px] font-bold text-primary">malloc()_core</span>
+                        <span class="font-label-mono text-[10px] text-on-surface-variant">ONLINE</span>
+                      </div>
+                      <div class="border border-outline-variant bg-surface-container p-4 tech-card font-body-md text-[13.5px] text-on-surface leading-relaxed">
+                        Operator, neural synchronization complete. Talk with me, record voice messages, or upload image attachments. Any key skills, background facts, or preferences you mention are automatically remembered in your Long-Term Memory Vault.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quick Action Chips -->
+                <div class="quick-suggestions flex flex-wrap gap-2 pt-2" id="chat-suggestion-chips">
+                  <button class="suggestion-chip" onclick="useSuggestion('I am a Senior Backend Engineer specializing in Python, FastAPI, and distributed systems.')">💼 Set career profile</button>
+                  <button class="suggestion-chip" onclick="useSuggestion('My favorite language is Rust and I love building low-latency microservices.')">🦀 Set preferences</button>
+                  <button class="suggestion-chip" onclick="useSuggestion('What do you know about me so far from my stored memories?')">🔍 Test memory retrieval</button>
+                </div>
+              </div>
+
+              <!-- Voice Recording Live Bar -->
+              <div id="voice-recording-bar" class="voice-recording-bar hidden px-6 py-2.5 bg-error/10 border-t border-error/40 flex items-center justify-between z-20">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-error animate-ping"></span>
+                  <span class="font-label-mono text-error text-[12px] uppercase tracking-wider">Recording Audio... (<span id="recording-timer">0:00</span>)</span>
+                </div>
+                <button type="button" id="btn-stop-voice" class="px-3 py-1 bg-error border border-error text-background font-label-mono text-[11px] uppercase font-bold">
+                  Stop & Transcribe
+                </button>
+              </div>
+
+              <!-- Media Preview Bar -->
+              <div id="media-preview" class="media-preview hidden px-6 py-2 bg-surface-container border-t border-outline-variant/40 flex items-center justify-between z-20">
+                <div class="preview-content font-label-mono text-[11px] text-secondary" id="preview-content"></div>
+                <button id="btn-cancel-media" class="p-1 text-on-surface-variant hover:text-error" title="Remove attachment">✕</button>
+              </div>
+
+              <!-- Input Area -->
+              <div class="bg-background/95 backdrop-blur-md border-t border-outline-variant/50 p-4 md:p-5 z-20 shrink-0">
+                <div class="max-w-4xl mx-auto relative">
+                  <form id="chat-form" class="flex items-end gap-2 border border-outline-variant bg-surface-container p-2 focus-within:border-primary focus-within:shadow-[0_0_12px_rgba(242,175,255,0.25)] transition-all duration-100 tech-card">
+                    
+                    <button type="button" id="btn-attach-image" class="p-2 text-on-surface-variant hover:text-primary transition-colors" title="Attach image for BLIP captioning">
+                      <span class="material-symbols-outlined text-[20px]">attach_file</span>
+                    </button>
+                    <input type="file" id="image-file-input" accept="image/*" class="hidden"/>
+
+                    <button type="button" id="btn-voice-record" class="p-2 text-on-surface-variant hover:text-secondary transition-colors" title="Voice Input (faster-whisper)">
+                      <span class="material-symbols-outlined text-[20px]">mic</span>
+                    </button>
+
+                    <textarea id="chat-input" class="flex-1 bg-transparent border-none outline-none resize-none font-label-mono text-[13px] text-on-surface placeholder:text-text-muted p-2 min-h-[44px] max-h-32 focus:ring-0" placeholder="> EXECUTE COMMAND OR TYPE MESSAGE..." rows="1"></textarea>
+
+                    <button type="submit" id="btn-send" class="bg-primary/10 text-primary border border-primary p-2 hover:bg-primary hover:text-background transition-all duration-200 flex items-center justify-center h-10 w-10 shrink-0 glow-primary">
+                      <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">send</span>
+                    </button>
+                  </form>
+
+                  <div class="flex justify-between items-center mt-2 px-2">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase">Shift + Enter for new line</span>
+                    <span class="font-label-mono text-[10px] text-on-surface-variant flex items-center gap-2 uppercase">
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_5px_#00eefc] inline-block animate-pulse"></span> STREAM_READY
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Context Sidebar -->
+            <aside class="hidden lg:flex w-72 border-l border-outline-variant bg-surface-container-low/50 flex-col shrink-0 overflow-y-auto p-5 space-y-5">
+              <div class="border-b border-outline-variant/30 pb-3">
+                <h3 class="font-headline-lg text-[15px] text-on-surface uppercase tracking-wider">SESSION_CONTEXT</h3>
+              </div>
+
+              <!-- Context Card -->
+              <div class="border border-outline-variant bg-surface-container p-4 tech-card glow-primary">
+                <div class="flex items-center gap-2 border-b border-outline-variant/30 pb-2.5 mb-3">
+                  <span class="material-symbols-outlined text-primary text-[16px]">data_object</span>
+                  <h4 class="font-label-mono text-[11px] text-primary uppercase">// ACTIVE_CONTEXT</h4>
+                </div>
+                <ul class="space-y-2.5 font-label-mono text-[11px] uppercase">
+                  <li class="flex justify-between items-center">
+                    <span class="text-on-surface-variant">OPERATOR:</span>
+                    <span class="text-secondary text-glow-secondary font-bold" id="sidebar-user-id">ACTIVE</span>
+                  </li>
+                  <li class="flex justify-between items-center">
+                    <span class="text-on-surface-variant">VAULT_FACTS:</span>
+                    <span class="text-primary text-glow-primary font-bold" id="sidebar-vault-count">0</span>
+                  </li>
+                  <li class="flex justify-between items-center">
+                    <span class="text-on-surface-variant">SYS_ENGINE:</span>
+                    <span class="text-on-surface">malloc.core</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Quick Commands -->
+              <div>
+                <h4 class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider mb-2.5">// QUICK_COMMANDS</h4>
+                <div class="flex flex-col gap-2">
+                  <button onclick="useSuggestion('Based on my background, what career paths or roles best suit me?')" class="w-full text-left border border-outline-variant bg-surface-container/50 px-3 py-2 font-label-mono text-[11px] text-on-surface hover:border-primary hover:text-primary transition-all uppercase tech-corner">
+                    /suggest_roles
+                  </button>
+                  <button onclick="useSuggestion('Help me draft a compelling intro pitch highlighting my core technical skills.')" class="w-full text-left border border-outline-variant bg-surface-container/50 px-3 py-2 font-label-mono text-[11px] text-on-surface hover:border-primary hover:text-primary transition-all uppercase tech-corner">
+                    /draft_pitch
+                  </button>
+                  <button onclick="useSuggestion('Conduct a mock technical interview for a Senior Backend Engineer role.')" class="w-full text-left border border-outline-variant bg-surface-container/50 px-3 py-2 font-label-mono text-[11px] text-on-surface hover:border-primary hover:text-primary transition-all uppercase tech-corner">
+                    /mock_interview
+                  </button>
+                </div>
+              </div>
+            </aside>
+
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 2: Memory Vault -->
+        <!-- ================================================================== -->
+        <section id="tab-memory" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant/30 pb-4">
+              <div>
+                <h1 class="font-headline-lg text-headline-lg text-on-surface">MEMORY_VAULT_SYS</h1>
+                <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// PERSISTENT STRUCTURED EXTRACTIONS. SYNTHESIZED KNOWLEDGE BASE.</p>
+              </div>
+              <button id="btn-refresh-memories" class="px-5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-label-mono hover:bg-primary/20 transition-all glow-primary flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">sync</span>
+                <span>REFRESH_SYNC</span>
+              </button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface-container-low p-3 border border-outline-variant tech-card">
+              <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/50 text-sm">search</span>
+                <input id="memory-search-input" class="w-full pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant text-primary font-label-mono text-label-mono focus:border-primary focus:outline-none placeholder:text-on-surface-variant/50" placeholder="SEARCH_DATABANKS..." type="text"/>
+              </div>
+              
+              <div class="flex gap-2 w-full md:w-auto overflow-x-auto" id="memory-filter-pills">
+                <button class="pill active" data-filter="all">ALL (<span id="count-all-memories">0</span>)</button>
+                <button class="pill" data-filter="semantic">FACTS & SKILLS (<span id="count-semantic-memories">0</span>)</button>
+                <button class="pill" data-filter="episodic">EXPERIENCES (<span id="count-episodic-memories">0</span>)</button>
+              </div>
+            </div>
+
+            <!-- Memories Grid Container -->
+            <div class="memories-grid" id="memories-grid"></div>
+
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 3: Resume vs Job Matcher -->
+        <!-- ================================================================== -->
+        <section id="tab-matcher" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="border-b border-outline-variant/30 pb-4">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">RESUME_MATCHER_SYS</h2>
+              <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// DEEP COMPARATIVE TECHNICAL FIT & OUTREACH COMPOSITION</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Left Column: Inputs -->
+              <div class="lg:col-span-6 space-y-5">
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <h3 class="font-label-mono text-label-mono text-primary uppercase mb-4">// 1. RESUME PROFILE SOURCE</h3>
+                  
+                  <div class="space-y-4">
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1.5 uppercase">Select Saved Resume</label>
+                      <div class="flex gap-2">
+                        <select id="resume-select-picker" class="flex-1 p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface">
+                          <option value="new">+ Upload / Enter New Resume</option>
+                        </select>
+                        <button id="btn-delete-active-resume" class="btn-card-action danger hidden">Delete</button>
+                      </div>
+                    </div>
+
+                    <div class="p-6 border border-dashed border-outline-variant hover:border-primary cursor-pointer text-center transition-colors bg-surface-container-low" id="resume-dropzone">
+                      <input type="file" id="resume-file-input" accept=".pdf,.txt,.md" class="hidden"/>
+                      <span class="material-symbols-outlined text-primary text-[28px] mb-1">upload_file</span>
+                      <p class="font-label-mono text-[11px]">Click or drag & drop PDF/TXT resume file</p>
+                    </div>
+
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Profile Title</label>
+                      <input type="text" id="resume-title-input" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Senior Backend Engineer Resume"/>
+                    </div>
+
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Resume Raw Text</label>
+                      <textarea id="matcher-resume-text" rows="6" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Resume text extracted automatically or paste here..."></textarea>
+                    </div>
+
+                    <button type="button" id="btn-save-resume" class="px-4 py-1.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase hover:bg-secondary/20 transition-all">
+                      Save to Profiles
+                    </button>
+                  </div>
+                </div>
+
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <h3 class="font-label-mono text-label-mono text-secondary uppercase mb-4">// 2. TARGET JOB SPECIFICATION</h3>
+                  
+                  <div class="space-y-4">
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job URL (LinkedIn, Greenhouse, Lever)</label>
+                      <div class="flex gap-2">
+                        <input type="url" id="matcher-job-url" class="flex-1 p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="https://..."/>
+                        <button type="button" id="btn-fetch-job" class="px-4 py-2 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase hover:bg-secondary/20 transition-all">
+                          <span id="fetch-btn-text">⚡ FETCH</span>
+                        </button>
+                        <button type="button" id="btn-matcher-check-auth" class="px-3 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] uppercase hover:bg-primary/20 transition-all flex items-center gap-1" title="Check Authenticity">
+                          <span class="material-symbols-outlined text-[15px]">security</span>
+                          <span>AUDIT</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="matcher-bot-warning" class="hidden p-3 text-[11px] font-label-mono border border-warning/40 bg-warning/10 text-warning">
+                      ⚠️ Authentication required. Please paste the job description below.
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Company</label>
+                        <input type="text" id="matcher-company" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Acme Corp"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Role Title</label>
+                        <input type="text" id="matcher-role" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Staff AI Engineer"/>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job Description Text</label>
+                      <textarea id="matcher-jd-text" rows="6" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Paste full job description requirements here..."></textarea>
+                    </div>
+
+                    <div class="flex gap-2">
+                      <button type="button" id="btn-run-match" class="flex-1 py-3.5 bg-primary/10 border border-primary text-primary font-label-mono text-[13px] font-bold uppercase tracking-widest hover:bg-primary hover:text-background transition-all glow-primary flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">bolt</span>
+                        <span>MATCH & SCORE RESUME</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Suggested Resume Edits Section (Directly below 2. Target Job Specification) -->
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-secondary" id="matcher-suggested-edits-panel">
+                  <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3 mb-4">
+                    <div>
+                      <h3 class="font-label-mono text-label-mono text-secondary uppercase">// 3. SUGGESTED RESUME EDITS</h3>
+                      <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5">// AI-SUGGESTED REWRITES &amp; KEYWORD GAPS — OPT-IN &amp; REVIEW BEFORE USE</p>
+                    </div>
+                    <button type="button" id="btn-generate-edits" class="px-3 py-1.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase hover:bg-secondary/20 transition-all flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[15px]">auto_fix_high</span>
+                      <span id="btn-generate-edits-text">GENERATE EDITS</span>
+                    </button>
+                  </div>
+
+                  <!-- Loading State for Edits -->
+                  <div id="edits-loading-state" class="hidden p-6 text-center space-y-3">
+                    <div class="spinner"></div>
+                    <p class="font-label-mono text-[11.5px] text-secondary">Analyzing skill gaps &amp; synthesizing targeted bullet rewrites...</p>
+                    <p class="font-label-mono text-[10px] text-on-surface-variant">Running Layer 1 Gap Analysis + Layer 2 Optimizer + Layer 3 Guardrail Validation</p>
+                  </div>
+
+                  <!-- Empty Initial State for Edits -->
+                  <div id="edits-empty-state" class="p-5 border border-dashed border-outline-variant/50 text-center space-y-2 bg-surface-container-low">
+                    <span class="material-symbols-outlined text-secondary text-[24px]">edit_note</span>
+                    <p class="font-label-mono text-[11.5px] text-on-surface-variant">
+                      Click "Generate Edits" or "Match &amp; Score Resume" to receive concrete diff rewrites and keyword placement suggestions.
+                    </p>
+                  </div>
+
+                  <!-- Edits List Container -->
+                  <div id="edits-list-container" class="space-y-4 hidden"></div>
+                </div>
+
+              </div>
+
+              <!-- Right Column: Results -->
+              <div class="lg:col-span-6 space-y-5">
+                <!-- Empty State -->
+                <div id="matcher-empty-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-primary flex flex-col items-center justify-center text-center gap-4 min-h-[350px]">
+                  <span class="font-label-mono text-[11px] text-on-surface-variant uppercase tracking-widest">// READY_FOR_ANALYSIS</span>
+                  <div class="w-16 h-16 bg-background border border-primary/40 flex items-center justify-center glow-primary rounded-sm">
+                    <span class="material-symbols-outlined text-[36px] text-primary text-glow-primary">compare_arrows</span>
+                  </div>
+                  <p class="font-body-md text-[13px] text-on-surface-variant max-w-sm">
+                    Select a resume and provide a target job description to generate fit scoring, matched keywords, and tailored outreach pitches.
+                  </p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="matcher-loading-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-secondary flex flex-col items-center justify-center text-center gap-4 min-h-[350px] hidden">
+                  <div class="spinner"></div>
+                  <h4 class="font-headline-lg text-[18px] text-secondary">ANALYZING_FIT_MATRIX...</h4>
+                  <p class="font-label-mono text-[11px] text-on-surface-variant">Synthesizing competencies against job requirements...</p>
+                </div>
+
+                <!-- Results View -->
+                <div id="matcher-results-view" class="space-y-5 hidden">
+                  <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col items-center justify-center text-center gap-3 relative overflow-hidden">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest">// OVERALL_FIT_INDEX</span>
+                    <div class="font-display-lg text-[64px] leading-none text-primary text-glow-primary" id="match-score-val">
+                      --<span class="text-[32px] text-primary/70">%</span>
+                    </div>
+                    <div class="px-4 py-1.5 border border-secondary text-secondary font-label-mono text-[11px] uppercase tracking-widest glow-secondary bg-secondary/10" id="match-verdict-pill">
+                      ANALYSIS_READY
+                    </div>
+                    <h3 class="font-headline-lg text-[18px] text-on-surface mt-2" id="match-target-role">--</h3>
+                    <p class="font-label-mono text-[12px] text-on-surface-variant" id="match-target-company">--</p>
+                    <p class="font-body-md text-[12.5px] text-on-surface-variant max-w-md mt-1" id="match-summary-text"></p>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-3">// STRENGTHS_&_SENIORITY_FIT</h4>
+                    <ul class="space-y-2 font-label-mono text-[12px] text-on-surface-variant" id="match-strengths-list"></ul>
+                    <div class="mt-3 p-3 bg-surface-container-low border-l-2 border-secondary font-label-mono text-[11.5px] text-secondary" id="match-experience-fit"></div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-4">// SKILL_EXTRACTION_ANALYSIS</h4>
+                    <div class="space-y-4">
+                      <div>
+                        <span class="font-label-mono text-[11px] text-secondary uppercase block mb-2">✓ Matched Keywords</span>
+                        <div class="flex flex-wrap gap-2" id="skills-matched-tags"></div>
+                      </div>
+                      <div>
+                        <span class="font-label-mono text-[11px] text-error uppercase block mb-2">✗ Critical Gap / Missing Keywords</span>
+                        <div class="flex flex-wrap gap-2" id="skills-missing-tags"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-3">// TAILORING_RECOMMENDATIONS</h4>
+                    <ul class="space-y-2 font-label-mono text-[12px] text-on-surface-variant" id="match-recommendations-list"></ul>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-secondary">
+                    <div class="flex justify-between items-center mb-3">
+                      <h4 class="font-label-mono text-[11px] text-secondary uppercase">// TAILORED_OUTREACH_PITCH</h4>
+                      <button id="btn-copy-pitch" class="px-3 py-1 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[10px] uppercase hover:bg-secondary/20">
+                        📋 COPY_PITCH
+                      </button>
+                    </div>
+                    <div class="p-3 bg-surface-container-low font-body-md text-[13px] text-on-surface italic leading-relaxed" id="match-pitch-text"></div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button type="button" id="btn-add-matched-to-tracker" class="w-full py-3 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] font-bold uppercase tracking-widest hover:bg-secondary hover:text-background transition-all glow-secondary flex items-center justify-center gap-1.5">
+                      <span class="material-symbols-outlined text-[17px]">add_task</span>
+                      <span>LOG TO TRACKER</span>
+                    </button>
+                    <button type="button" id="btn-matcher-inspect-insights" class="w-full py-3 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] font-bold uppercase tracking-widest hover:bg-primary hover:text-background transition-all glow-primary flex items-center justify-center gap-1.5">
+                      <span class="material-symbols-outlined text-[17px]">domain</span>
+                      <span>INSIGHTS</span>
+                    </button>
+                    <button type="button" id="btn-matcher-apply-email" class="w-full py-3 bg-accent/10 border border-accent text-accent font-label-mono text-[11px] font-bold uppercase tracking-widest hover:bg-accent hover:text-background transition-all glow-accent flex items-center justify-center gap-1.5">
+                      <span class="material-symbols-outlined text-[17px]">send</span>
+                      <span>APPLY VIA EMAIL</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 4: ATS Parseability Checker -->
+        <!-- ================================================================== -->
+        <section id="tab-ats" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="border-b border-outline-variant/30 pb-4">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">ATS_PARSEABILITY_AUDIT</h2>
+              <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// RULE-BASED STRUCTURE VALIDATION + HUGGINGFACE BERT ENTITY SIGNALS</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-6 space-y-5">
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <h3 class="font-label-mono text-label-mono text-primary uppercase mb-4">// SELECT RESUME FOR AUDIT</h3>
+                  
+                  <div class="space-y-4">
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Select Resume Profile</label>
+                      <select id="ats-resume-select-picker" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface">
+                        <option value="new">+ Upload / Paste New Resume</option>
+                      </select>
+                    </div>
+
+                    <div class="p-6 border border-dashed border-outline-variant hover:border-primary cursor-pointer text-center transition-colors bg-surface-container-low" id="ats-resume-dropzone">
+                      <input type="file" id="ats-resume-file-input" accept=".pdf,.txt,.md,.docx" class="hidden"/>
+                      <span class="material-symbols-outlined text-primary text-[28px] mb-1">upload_file</span>
+                      <p class="font-label-mono text-[11px]">Click or drag & drop PDF/TXT/DOCX file</p>
+                    </div>
+
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Resume Text Content</label>
+                      <textarea id="ats-resume-text" rows="8" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Resume text will appear here automatically..."></textarea>
+                    </div>
+
+                    <button type="button" id="btn-run-ats-check" class="w-full py-3.5 bg-primary/10 border border-primary text-primary font-label-mono text-[13px] font-bold uppercase tracking-widest hover:bg-primary hover:text-background transition-all glow-primary flex items-center justify-center gap-2">
+                      <span class="material-symbols-outlined">verified_user</span>
+                      <span>RUN ATS PARSEABILITY AUDIT</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-6 space-y-5">
+                <!-- Empty State -->
+                <div id="ats-empty-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-primary flex flex-col items-center justify-center text-center gap-4 min-h-[350px]">
+                  <span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest">// ATS_AUDIT_READY</span>
+                  <div class="w-16 h-16 bg-background border border-primary/40 flex items-center justify-center glow-primary rounded-sm">
+                    <span class="material-symbols-outlined text-[36px] text-primary text-glow-primary">verified</span>
+                  </div>
+                  <p class="font-body-md text-[13px] text-on-surface-variant max-w-sm">
+                    Evaluates parseability, section structure, contact detectability, table formatting, and BERT entity extraction.
+                  </p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="ats-loading-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-secondary flex flex-col items-center justify-center text-center gap-4 min-h-[350px] hidden">
+                  <div class="spinner"></div>
+                  <h4 class="font-headline-lg text-[18px] text-secondary">AUDITING_PARSEABILITY...</h4>
+                  <p class="font-label-mono text-[11px] text-on-surface-variant">Executing deterministic checks and BERT entity models...</p>
+                </div>
+
+                <!-- Results View -->
+                <div id="ats-results-view" class="space-y-5 hidden">
+                  <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col items-center justify-center text-center gap-3">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest">// ATS_PARSEABILITY_INDEX</span>
+                    <div class="font-display-lg text-[64px] leading-none text-primary text-glow-primary" id="ats-score-val">
+                      --<span class="text-[32px] text-primary/70">%</span>
+                    </div>
+                    <div class="px-4 py-1.5 border border-secondary text-secondary font-label-mono text-[11px] uppercase tracking-widest glow-secondary bg-secondary/10" id="ats-verdict-pill">
+                      AWAITING_INPUT
+                    </div>
+                    <div class="flex gap-6 mt-2 font-label-mono text-[11px] text-on-surface-variant">
+                      <span>L1 Format: <strong class="text-primary" id="ats-l1-val">--%</strong></span>
+                      <span>L2 Entity Signals: <strong class="text-secondary" id="ats-l2-val">--%</strong></span>
+                    </div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-3">// FORMATTING_&_STRUCTURE_CHECKS</h4>
+                    <div class="space-y-2" id="ats-rule-checks-list"></div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-3">// BERT_ENTITY_&_DOMAIN_SIGNALS</h4>
+                    <div class="space-y-2" id="ats-ml-checks-list"></div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <h4 class="font-label-mono text-[11px] text-primary uppercase mb-3">// PRIORITY_RECOMMENDATIONS</h4>
+                    <ul class="space-y-2 font-label-mono text-[12px] text-on-surface-variant" id="ats-recommendations-list"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 5: Job Post Authenticity Checker -->
+        <!-- ================================================================== -->
+        <section id="tab-authenticity" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="border-b border-outline-variant/30 pb-4">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">JOB_AUTHENTICITY_AUDIT</h2>
+              <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// HYBRID 3-LAYER FRAUD RISK DETECTION & RAG REASONING ENGINE</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-5 space-y-5">
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <h3 class="font-label-mono text-label-mono text-primary uppercase mb-4">// 1. JOB POSTING SPECIFICATION</h3>
+                  
+                  <div class="space-y-4">
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job URL</label>
+                      <div class="flex gap-2">
+                        <input type="url" id="auth-job-url" class="flex-1 p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="https://..."/>
+                        <button type="button" id="btn-auth-fetch-job" class="px-4 py-2 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase hover:bg-secondary/20 transition-all">
+                          <span id="auth-fetch-btn-text">⚡ FETCH</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="auth-bot-warning" class="hidden p-3 text-[11px] font-label-mono border border-warning/40 bg-warning/10 text-warning">
+                      ⚠️ Could not auto-fetch page. Please paste description text below.
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Company (Optional)</label>
+                        <input type="text" id="auth-company-input" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Acme Tech"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Role Title (Optional)</label>
+                        <input type="text" id="auth-role-input" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Senior Software Engineer"/>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job Description Raw Text</label>
+                      <textarea id="auth-job-text" rows="8" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Paste full job description text or fetch via URL above..."></textarea>
+                    </div>
+
+                    <button type="button" id="btn-run-authenticity" class="w-full py-3 bg-primary/10 border border-primary text-primary font-label-mono text-[12px] uppercase hover:bg-primary/20 transition-all glow-primary flex items-center justify-center gap-2">
+                      <span class="material-symbols-outlined text-[18px]">security</span>
+                      <span id="auth-btn-label">RUN AUTHENTICITY AUDIT</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <h3 class="font-label-mono text-label-mono text-secondary uppercase mb-3">// PRESET TEST SCENARIOS</h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button type="button" id="btn-auth-preset-safe" class="p-2.5 bg-surface-container-low border border-outline-variant hover:border-secondary font-label-mono text-[11px] text-left text-on-surface-variant hover:text-secondary transition-all">
+                      <span class="text-secondary font-bold block mb-1">✓ Legitimate Tech Role</span>
+                      <span class="text-[10px] opacity-75">Corporate software engineering posting</span>
+                    </button>
+                    <button type="button" id="btn-auth-preset-scam" class="p-2.5 bg-surface-container-low border border-outline-variant hover:border-error font-label-mono text-[11px] text-left text-on-surface-variant hover:text-error transition-all">
+                      <span class="text-error font-bold block mb-1">✗ Known Scam Pattern</span>
+                      <span class="text-[10px] opacity-75">Telegram screening + equipment check</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-7 space-y-5">
+                <div id="auth-empty-state" class="bg-surface-container border border-outline-variant p-8 tech-card flex flex-col items-center justify-center text-center gap-4 min-h-[420px]">
+                  <div class="w-16 h-16 border border-secondary/40 bg-secondary/10 flex items-center justify-center shadow-[0_0_15px_rgba(125,244,255,0.2)]">
+                    <span class="material-symbols-outlined text-secondary text-[36px]">verified_user</span>
+                  </div>
+                  <h3 class="font-headline-lg text-[20px] text-on-surface">AWAITING_JOB_POSTING_INPUT</h3>
+                  <p class="font-label-mono text-[12px] text-on-surface-variant max-w-md">
+                    Input a job posting URL or paste the raw description text to run a 3-layer security audit across heuristic red flags, BERT classification, and RAG fraud pattern reasoning.
+                  </p>
+                </div>
+
+                <div id="auth-loading-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-secondary flex flex-col items-center justify-center text-center gap-4 min-h-[420px] hidden">
+                  <div class="spinner"></div>
+                  <h4 class="font-headline-lg text-[18px] text-secondary" id="auth-loading-title">AUDITING_POSTING_LEGITIMACY...</h4>
+                  <p class="font-label-mono text-[11px] text-on-surface-variant" id="auth-loading-subtitle">
+                    Running Layer 1 heuristics, Layer 2 BERT classifier, and Layer 3 RAG pattern retrieval...
+                  </p>
+                </div>
+
+                <div id="auth-results-view" class="space-y-5 hidden">
+                  <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary flex flex-col items-center justify-center text-center gap-3" id="auth-risk-hero">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest">// OVERALL_AUTHENTICITY_ASSESSMENT</span>
+                    
+                    <div class="px-5 py-2 border font-label-mono text-[13px] font-bold uppercase tracking-widest" id="auth-risk-pill">
+                      AWAITING_INPUT
+                    </div>
+
+                    <div class="font-display-lg text-[44px] leading-none text-primary mt-1" id="auth-risk-score">
+                      --<span class="text-[20px] text-on-surface-variant font-label-mono ml-1">/ 100 RISK INDEX</span>
+                    </div>
+
+                    <p class="font-body-md text-[13px] text-on-surface max-w-xl text-center mt-1" id="auth-risk-summary"></p>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <div class="flex justify-between items-center mb-3">
+                      <h4 class="font-label-mono text-[11px] text-primary uppercase">// LAYER 1: HEURISTIC RED-FLAG CHECKS</h4>
+                      <span class="font-label-mono text-[11px] text-on-surface-variant" id="auth-l1-counts">6 checks evaluated</span>
+                    </div>
+                    <div class="space-y-2.5" id="auth-layer1-list"></div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <div class="flex justify-between items-center mb-3">
+                      <h4 class="font-label-mono text-[11px] text-primary uppercase">// LAYER 2: BERT ML CLASSIFIER SIGNAL</h4>
+                      <span class="cyber-badge cyber-badge-cyan">BERT-BASE</span>
+                    </div>
+                    <div class="space-y-3" id="auth-layer2-content"></div>
+                  </div>
+
+                  <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                    <div class="flex justify-between items-center mb-3">
+                      <h4 class="font-label-mono text-[11px] text-primary uppercase">// LAYER 3: RAG-AUGMENTED REASONING</h4>
+                      <span class="cyber-badge cyber-badge-magenta">RAG + LLM</span>
+                    </div>
+                    <div class="space-y-3" id="auth-layer3-content"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 5: Company Insights -->
+        <!-- ================================================================== -->
+        <section id="tab-insights" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="border-b border-outline-variant/30 pb-4">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">COMPANY_INSIGHTS_SYS</h2>
+              <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// TRANSFORMER-POWERED SIZE CLASSIFICATION, INDUSTRY TAGGING, CULTURE SENTIMENT &amp; INTERVIEW INTELLIGENCE</p>
+            </div>
+
+            <!-- Preset & Search Bar -->
+            <div class="bg-surface-container border border-outline-variant p-5 tech-card space-y-4">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <h3 class="font-label-mono text-[12px] text-primary uppercase tracking-wider">// TARGET ENTITY PROFILING</h3>
+                <div class="flex gap-2 flex-wrap">
+                  <span class="font-label-mono text-[11px] text-on-surface-variant self-center">QUICK PRESETS:</span>
+                  <button type="button" class="preset-btn" id="btn-insight-preset-stripe">⚡ STRIPE (MNC)</button>
+                  <button type="button" class="preset-btn" id="btn-insight-preset-startup">🚀 ROBOTICS LAB (STARTUP)</button>
+                  <button type="button" class="preset-btn" id="btn-insight-preset-conflict">⚠️ CONFLICT DEMO (DISAGREEMENT)</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <div class="md:col-span-4">
+                  <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Company Name</label>
+                  <input type="text" id="insight-company-input" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Stripe, OpenAI, Acme Corp"/>
+                </div>
+                <div class="md:col-span-4">
+                  <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Company Website / URL (Optional)</label>
+                  <input type="url" id="insight-url-input" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="https://stripe.com"/>
+                </div>
+                <div class="md:col-span-4">
+                  <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Target Role Title (Optional)</label>
+                  <input type="text" id="insight-role-input" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Senior Backend Engineer"/>
+                </div>
+              </div>
+
+              <div>
+                <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">About / Company Description / Job Post Snippets (Optional)</label>
+                <textarea id="insight-about-input" rows="3" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Paste company overview, about page, or job description snippets..."></textarea>
+              </div>
+
+              <button type="button" id="btn-run-insights" class="w-full py-3.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[13px] font-bold uppercase tracking-widest hover:bg-secondary hover:text-background transition-all glow-secondary flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">analytics</span>
+                <span id="insight-btn-label">GENERATE COMPANY INTELLIGENCE</span>
+              </button>
+            </div>
+
+            <!-- Empty State -->
+            <div id="insight-empty-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-secondary flex flex-col items-center justify-center text-center gap-4 min-h-[300px]">
+              <span class="font-label-mono text-[11px] text-on-surface-variant uppercase tracking-widest">// READY_FOR_SYNTHESIS</span>
+              <div class="w-16 h-16 bg-background border border-secondary/40 flex items-center justify-center glow-secondary rounded-sm">
+                <span class="material-symbols-outlined text-[36px] text-secondary text-glow-secondary">domain</span>
+              </div>
+              <p class="font-body-md text-[13px] text-on-surface-variant max-w-md">
+                Enter a company name or choose a preset to generate Zero-Shot BART size classification, DistilBERT industry classification, and SST-2 sentiment culture synthesis.
+              </p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="insight-loading-state" class="bg-surface-container border border-outline-variant p-8 tech-card glow-secondary flex flex-col items-center justify-center text-center gap-4 min-h-[300px] hidden">
+              <div class="spinner"></div>
+              <h4 class="font-headline-lg text-[18px] text-secondary">SYNTHESIZING_COMPANY_INTELLIGENCE...</h4>
+              <p class="font-label-mono text-[11px] text-on-surface-variant">Running BART Zero-Shot + DistilBERT Industry + DistilBERT SST-2 Culture Scoring...</p>
+            </div>
+
+            <!-- Results View -->
+            <div id="insight-results-view" class="space-y-6 hidden">
+              <!-- URL Mismatch Warning Alert -->
+              <div id="insight-url-mismatch-alert" class="p-3.5 bg-warning/15 border border-warning text-warning font-label-mono text-[12px] rounded-sm hidden flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-[20px] shrink-0 text-warning">warning</span>
+                <div>
+                  <strong class="uppercase font-bold tracking-wider">// POTENTIAL DOMAIN / COMPANY MISMATCH:</strong>
+                  <div class="text-[11.5px] text-on-surface/90 mt-1" id="insight-url-mismatch-text"></div>
+                </div>
+              </div>
+
+              <!-- Top Overview Row -->
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Classification Card (Left 6 cols) -->
+                <div class="lg:col-span-6 bg-surface-container border border-outline-variant p-6 tech-card glow-primary space-y-4">
+                  <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest">// LAYER 1: SIZE &amp; INDUSTRY PROFILE</span>
+                    <span class="cyber-badge cyber-badge-cyan" id="insight-industry-badge">INDUSTRY</span>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="text-[24px] font-display-lg text-primary font-bold" id="insight-company-title">--</div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <span class="px-3 py-1 bg-primary/10 border border-primary text-primary font-label-mono text-[12px] uppercase font-bold" id="insight-size-label">AWAITING_INPUT</span>
+                      <span class="font-label-mono text-[11px] text-on-surface-variant" id="insight-size-confidence">Confidence: --%</span>
+                    </div>
+                  </div>
+
+                  <!-- Low Confidence Data Quality Alert Banner -->
+                  <div id="insight-low-data-alert" class="p-3 bg-error/10 border border-error text-error font-label-mono text-[11.5px] rounded-sm hidden flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[18px] shrink-0">info</span>
+                    <div>
+                      <strong>LOW GROUNDING DATA WARNING:</strong>
+                      <div class="text-[11px] text-error/90 mt-0.5" id="insight-low-data-text">Workforce headcount and founding year could not be verified. Classification is ungrounded.</div>
+                    </div>
+                  </div>
+
+                  <!-- Disagreement Alert Banner -->
+                  <div id="insight-disagreement-alert" class="p-3 bg-warning/10 border border-warning text-warning font-label-mono text-[11.5px] rounded-sm hidden flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[18px] shrink-0">warning</span>
+                    <div>
+                      <strong>SIGNAL DISAGREEMENT DETECTED:</strong>
+                      <div class="text-[11px] text-warning/90 mt-0.5">The classifier prediction conflicts with extracted numeric facts (employee count / founding year). Verify context manually.</div>
+                    </div>
+                  </div>
+
+                  <!-- Zero-Shot All Scores Breakdown -->
+                  <div class="space-y-2">
+                    <div class="font-label-mono text-[11px] text-on-surface-variant uppercase">// ZERO-SHOT SCORE DISTRIBUTION (facebook/bart-large-mnli)</div>
+                    <div class="space-y-1.5 font-label-mono text-[11px]" id="insight-all-scores-list"></div>
+                  </div>
+
+                  <!-- Extracted Facts -->
+                  <div class="grid grid-cols-2 gap-3 pt-2 border-t border-outline-variant/30">
+                    <div class="p-2.5 bg-surface-container-low border border-outline-variant">
+                      <span class="font-label-mono text-[10px] text-on-surface-variant block uppercase">WORKFORCE ESTIMATE</span>
+                      <span class="font-label-mono text-[13px] text-secondary font-bold" id="insight-employees-val">--</span>
+                    </div>
+                    <div class="p-2.5 bg-surface-container-low border border-outline-variant">
+                      <span class="font-label-mono text-[10px] text-on-surface-variant block uppercase">FOUNDED YEAR</span>
+                      <span class="font-label-mono text-[13px] text-secondary font-bold" id="insight-founded-val">--</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Culture & Sentiment Card (Right 6 cols) -->
+                <div class="lg:col-span-6 bg-surface-container border border-outline-variant p-6 tech-card glow-secondary space-y-4">
+                  <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+                    <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest">// LAYER 3: CULTURE &amp; SENTIMENT BREAKDOWN</span>
+                    <span class="font-label-mono text-[10px] text-secondary">distilbert-sst2</span>
+                  </div>
+
+                  <!-- Sentiment Meter -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center font-label-mono text-[11px]">
+                      <span class="text-on-surface font-bold">QUANTIFIABLE SENTIMENT TALLY</span>
+                      <span class="text-secondary font-bold" id="insight-sentiment-summary">6 POSITIVE / 2 NEGATIVE (75% POSITIVE)</span>
+                    </div>
+                    <div class="w-full h-3 bg-surface-container-low rounded-full overflow-hidden flex border border-outline-variant" id="insight-sentiment-bar-track">
+                      <div class="bg-secondary h-full transition-all" id="insight-sentiment-pos-bar" style="width: 75%;"></div>
+                      <div class="bg-error h-full transition-all" id="insight-sentiment-neg-bar" style="width: 25%;"></div>
+                    </div>
+                    <div class="font-label-mono text-[10.5px] text-on-surface-variant" id="insight-signal-strength-note"></div>
+                  </div>
+
+                  <!-- Praised & Criticized Aspects -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="space-y-2">
+                      <div class="font-label-mono text-[11px] text-primary flex items-center gap-1 font-bold">
+                        <span class="material-symbols-outlined text-[16px]">thumb_up</span>
+                        <span>PRAISED ASPECTS</span>
+                      </div>
+                      <ul class="space-y-1.5 text-[12px] font-body-md text-on-surface/90" id="insight-praised-list"></ul>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="font-label-mono text-[11px] text-warning flex items-center gap-1 font-bold">
+                        <span class="material-symbols-outlined text-[16px]">thumb_down</span>
+                        <span>CRITICIZED ASPECTS</span>
+                      </div>
+                      <ul class="space-y-1.5 text-[12px] font-body-md text-on-surface/90" id="insight-criticized-list"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Layer 4: Interview Intelligence Card -->
+              <div class="bg-surface-container border border-outline-variant p-6 tech-card space-y-4">
+                <div class="border-b border-outline-variant/30 pb-3 flex items-center justify-between">
+                  <h3 class="font-label-mono text-label-mono text-primary uppercase">// LAYER 4: INTERVIEW INTELLIGENCE &amp; PREPARATION BLUEPRINT</h3>
+                  <span class="font-label-mono text-[10px] text-on-surface-variant">CURATED BEST PRACTICES</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div class="space-y-2">
+                    <div class="font-label-mono text-[11px] text-secondary font-bold">// KEY FOCUS AREAS</div>
+                    <div class="flex flex-wrap gap-1.5" id="insight-focus-areas-tags"></div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="font-label-mono text-[11px] text-secondary font-bold">// PROCESS STAGES</div>
+                    <ol class="space-y-1.5 text-[12px] font-body-md text-on-surface/90 list-decimal list-inside" id="insight-process-stages-list"></ol>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="font-label-mono text-[11px] text-secondary font-bold">// TARGETED PREPARATION TIPS</div>
+                    <ul class="space-y-1.5 text-[12px] font-body-md text-on-surface/90 list-disc list-inside" id="insight-prep-tips-list"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab: Apply via Email (Outreach) -->
+        <!-- ================================================================== -->
+        <section id="tab-outreach" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <!-- Header Banner -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant/30 pb-4">
+              <div>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">APPLY_VIA_EMAIL_SYS</h2>
+                <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">
+                  // INFORMAL JD EXTRACTION, RESUME-GROUNDED DRAFTING, FABRICATION AUDIT &amp; GMAIL SENDER
+                </p>
+              </div>
+              <!-- Gmail Connection Status Pill in Header -->
+              <div id="outreach-header-auth-pill" class="flex items-center gap-2 px-3 py-1.5 bg-surface-container border border-outline-variant rounded-sm font-label-mono text-[11px]">
+                <span class="w-2 h-2 rounded-full bg-on-surface-variant" id="outreach-auth-indicator-dot"></span>
+                <span id="outreach-header-auth-text" class="text-on-surface-variant">GMAIL_OFFLINE</span>
+              </div>
+            </div>
+
+            <!-- 4-Step Process Breadcrumb / Workflow Guide -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div class="p-3 bg-surface-container border border-primary text-primary font-label-mono text-[11px] tech-card flex items-center gap-2" id="outreach-step1-indicator">
+                <span class="w-5 h-5 rounded-full bg-primary text-background font-bold flex items-center justify-center text-[10px]">1</span>
+                <span>PARSE_POSTING</span>
+              </div>
+              <div class="p-3 bg-surface-container border border-outline-variant text-on-surface-variant font-label-mono text-[11px] tech-card flex items-center gap-2" id="outreach-step2-indicator">
+                <span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface font-bold flex items-center justify-center text-[10px]">2</span>
+                <span>SELECT_ROLE</span>
+              </div>
+              <div class="p-3 bg-surface-container border border-outline-variant text-on-surface-variant font-label-mono text-[11px] tech-card flex items-center gap-2" id="outreach-step3-indicator">
+                <span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface font-bold flex items-center justify-center text-[10px]">3</span>
+                <span>DRAFT_&amp;_AUDIT</span>
+              </div>
+              <div class="p-3 bg-surface-container border border-outline-variant text-on-surface-variant font-label-mono text-[11px] tech-card flex items-center gap-2" id="outreach-step4-indicator">
+                <span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface font-bold flex items-center justify-center text-[10px]">4</span>
+                <span>REVIEW_&amp;_SEND</span>
+              </div>
+            </div>
+
+            <!-- Two-Column Grid: Steps 1 & 2 on Left, Steps 3 & 4 on Right -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+              <!-- Left Column: Input & Structured Role Selection (Steps 1 & 2) -->
+              <div class="lg:col-span-6 space-y-6">
+
+                <!-- STEP 1: Parse Informal Job Posting -->
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-primary">
+                  <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3 mb-4">
+                    <div>
+                      <h3 class="font-label-mono text-label-mono text-primary uppercase">// STEP 1: PARSE INFORMAL JOB POSTING</h3>
+                      <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5">// ACCEPTS EMOJI / WHATSAPP / LINKEDIN POSTS OR JD URL</p>
+                    </div>
+                    <!-- Quick Example Preset -->
+                    <button type="button" id="btn-outreach-preset-rayo" class="px-2.5 py-1 bg-primary/10 border border-primary/40 text-primary font-label-mono text-[10.5px] uppercase hover:bg-primary/20 transition-all flex items-center gap-1">
+                      <span>⚡ RAYO INNOVATIONS (EXAMPLE)</span>
+                    </button>
+                  </div>
+
+                  <div class="space-y-4">
+                    <!-- Resume Profile Selection -->
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Active Resume Profile (for grounding)</label>
+                      <select id="outreach-resume-select-picker" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface">
+                        <option value="active">Active Selected Resume</option>
+                      </select>
+                    </div>
+
+                    <!-- Optional URL Fetcher -->
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Fetch from Job URL (Optional)</label>
+                      <div class="flex gap-2">
+                        <input type="url" id="outreach-url-input" class="flex-1 p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="https://example.com/job/1234"/>
+                        <button type="button" id="btn-outreach-fetch-url" class="px-3 py-2 bg-surface-container-high border border-outline-variant text-on-surface font-label-mono text-[11px] hover:bg-primary/20 hover:text-primary transition-all">
+                          FETCH
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Raw Textarea Input -->
+                    <div>
+                      <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job Posting Content (Raw Text / Emoji Bullets)</label>
+                      <textarea id="outreach-jd-text" rows="8" class="w-full p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface leading-relaxed" placeholder="🏢 Company: Rayo Innovations Pvt. Ltd.&#10;💼 Open Positions:&#10;* Web Designer&#10;* Graphic Designer&#10;* Android Developer&#10;* iOS Developer&#10;🎯 Experience: 0–1 Year / Freshers&#10;📍 Location: Shyamal, Ahmedabad&#10;🗓️ Working Days: 5 Days a Week&#10;📧 Apply Via: hr@rayoinnovations.com&#10;📞 Contact: +91 8799493952"></textarea>
+                    </div>
+
+                    <button type="button" id="btn-parse-outreach" class="w-full py-3.5 bg-primary/10 border border-primary text-primary font-label-mono text-[12.5px] font-bold uppercase tracking-widest hover:bg-primary hover:text-background transition-all glow-primary flex items-center justify-center gap-2">
+                      <span class="material-symbols-outlined text-[18px]">document_scanner</span>
+                      <span>PARSE JOB POSTING DETAILS</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 2: Review Structured Fields & Role Selection -->
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-secondary" id="outreach-step2-panel">
+                  <div class="border-b border-outline-variant/30 pb-3 mb-4">
+                    <h3 class="font-label-mono text-label-mono text-secondary uppercase">// STEP 2: STRUCTURED DETAILS &amp; ROLE SELECTION</h3>
+                    <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5">// VERIFY EXTRACTED METADATA AND SELECT TARGET POSITION</p>
+                  </div>
+
+                  <!-- Empty Placeholder before parsing -->
+                  <div id="outreach-step2-empty" class="p-6 text-center text-on-surface-variant font-label-mono text-[11px]">
+                    <span class="material-symbols-outlined text-[28px] opacity-40 mb-1">manage_search</span>
+                    <p>Click "Parse Job Posting Details" above to extract structured metadata.</p>
+                  </div>
+
+                  <!-- Loaded Extracted Form -->
+                  <div id="outreach-step2-content" class="space-y-4 hidden">
+                    <!-- Extracted Fields Grid (All Editable) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">🏢 Company Name</label>
+                        <input type="text" id="outreach-field-company" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="Company Name"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">📧 HR / Recipient Email</label>
+                        <input type="email" id="outreach-field-email" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="hr@company.com"/>
+                        <span id="outreach-email-missing-note" class="text-[10px] text-warning font-label-mono hidden mt-0.5 block">⚠️ Email not detected automatically — please input manually</span>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">📞 Contact Phone</label>
+                        <input type="text" id="outreach-field-phone" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="+91 ..."/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">📍 Location</label>
+                        <input type="text" id="outreach-field-location" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="Location"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">🎯 Experience Required</label>
+                        <input type="text" id="outreach-field-exp" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="e.g. 0-1 Years"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">🗓️ Working Days / Hours</label>
+                        <input type="text" id="outreach-field-days" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="5 Days a Week"/>
+                      </div>
+                    </div>
+
+                    <!-- Role Fit Recommendation Banner -->
+                    <div id="outreach-role-recommendation-box" class="p-3 bg-secondary/10 border border-secondary/40 font-label-mono text-[11px] text-secondary hidden">
+                      <div class="flex items-center gap-2 font-bold mb-1">
+                        <span class="material-symbols-outlined text-[16px]">psychology</span>
+                        <span>RESUME-ALIGNMENT RECOMMENDATION</span>
+                      </div>
+                      <p id="outreach-role-recommendation-text" class="text-on-surface/90 text-[10.5px] leading-normal"></p>
+                    </div>
+
+                    <!-- Role Selection Radio Options -->
+                    <div>
+                      <label class="font-label-mono text-[11px] text-secondary font-bold block mb-2 uppercase">// SELECT WHICH POSITION YOU ARE APPLYING FOR:</label>
+                      <div id="outreach-role-options-container" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Applicant Name & Custom Notes -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-outline-variant/30">
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">Applicant Name (Sign-off)</label>
+                        <input type="text" id="outreach-applicant-name" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="Your Full Name"/>
+                      </div>
+                      <div>
+                        <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">Custom Notes / Instructions</label>
+                        <input type="text" id="outreach-custom-instructions" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11.5px] text-on-surface" placeholder="e.g. mention my React project"/>
+                      </div>
+                    </div>
+
+                    <button type="button" id="btn-draft-outreach" class="w-full py-3.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[12.5px] font-bold uppercase tracking-widest hover:bg-secondary hover:text-background transition-all glow-secondary flex items-center justify-center gap-2">
+                      <span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+                      <span>DRAFT PERSONALIZED APPLICATION EMAIL</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Right Column: Review Draft & Send via Gmail (Steps 3 & 4) -->
+              <div class="lg:col-span-6 space-y-6">
+
+                <!-- STEP 3: Review Draft & Fabrication Guardrail -->
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card">
+                  <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3 mb-4">
+                    <div>
+                      <h3 class="font-label-mono text-label-mono text-primary uppercase">// STEP 3: EMAIL REVIEW &amp; FABRICATION AUDIT</h3>
+                      <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5">// GROUNDED IN REAL RESUME FACTS — EDIT FREELY BEFORE SENDING</p>
+                    </div>
+                    <!-- Cliché status tag -->
+                    <span id="outreach-cliche-status-tag" class="cyber-badge cyber-badge-cyan text-[10px]">
+                      ANTI-CLICHÉ ACTIVE
+                    </span>
+                  </div>
+
+                  <!-- Empty State before drafting -->
+                  <div id="outreach-step3-empty" class="p-8 text-center text-on-surface-variant font-label-mono text-[11px] min-h-[220px] flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-[32px] opacity-40 mb-2">mail</span>
+                    <p>Draft will appear here after selecting your role and clicking "Draft Personalized Application Email".</p>
+                  </div>
+
+                  <!-- Loading state -->
+                  <div id="outreach-step3-loading" class="p-8 text-center space-y-3 hidden min-h-[220px] flex flex-col items-center justify-center">
+                    <div class="spinner"></div>
+                    <p class="font-label-mono text-[12px] text-secondary">Synthesizing resume-grounded draft &amp; auditing skills...</p>
+                    <p class="font-label-mono text-[10px] text-on-surface-variant">Checking Anti-Cliché Blocklist &amp; BERT Token Extraction</p>
+                  </div>
+
+                  <!-- Draft Content Form -->
+                  <div id="outreach-step3-content" class="space-y-4 hidden">
+                    <!-- Subject Line -->
+                    <div>
+                      <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">Subject Line</label>
+                      <input type="text" id="outreach-email-subject" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface font-bold" placeholder="Subject..."/>
+                    </div>
+
+                    <!-- Email Body (Editable) -->
+                    <div>
+                      <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">Email Body Content (Editable)</label>
+                      <textarea id="outreach-email-body" rows="10" class="w-full p-3.5 bg-surface-container-low border border-outline-variant font-body-md text-[13px] text-on-surface leading-relaxed font-sans" placeholder="Email body..."></textarea>
+                    </div>
+
+                    <!-- Diagnostic Badges: Fabrication Guardrail & AI Detector -->
+                    <div class="space-y-2">
+                      <!-- Fabrication Guardrail Box -->
+                      <div id="outreach-fabrication-audit-box" class="p-3 bg-surface-container-low border border-outline-variant font-label-mono text-[11px]">
+                        <div class="flex items-center justify-between mb-1">
+                          <span class="text-primary font-bold">// FABRICATION GUARDRAIL AUDIT</span>
+                          <span id="outreach-fabrication-summary-tag" class="text-[10px] text-success">✓ 100% GROUNDED IN RESUME</span>
+                        </div>
+                        <div id="outreach-fabrication-flags-list" class="space-y-1.5 mt-2"></div>
+                      </div>
+
+                      <!-- Secondary AI Detector Signal Pill -->
+                      <div id="outreach-ai-detector-box" class="p-2.5 bg-surface-container-low border border-outline-variant/50 font-label-mono text-[10.5px] text-on-surface-variant flex items-center justify-between">
+                        <span id="outreach-detector-score-text">Secondary AI Signal: --</span>
+                        <span class="text-[9.5px] opacity-75">GPT-2 heuristic (non-authoritative)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- STEP 4: Gmail OAuth & Explicit Send Action -->
+                <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-accent">
+                  <div class="border-b border-outline-variant/30 pb-3 mb-4 flex items-center justify-between">
+                    <div>
+                      <h3 class="font-label-mono text-label-mono text-accent uppercase">// STEP 4: GMAIL OAUTH &amp; USER-INITIATED SEND</h3>
+                      <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5">// OFFICIAL GMAIL API — GMAIL.SEND SCOPE ONLY — NEVER AUTO-SENDS</p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <!-- Recipient Email Confirmation -->
+                    <div>
+                      <label class="font-label-mono text-[10.5px] text-on-surface-variant block mb-1 uppercase">Send To (Recipient HR Email)</label>
+                      <input type="email" id="outreach-email-recipient-confirm" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="hr@company.com"/>
+                    </div>
+
+                    <!-- Gmail Connection Card -->
+                    <div class="p-4 bg-surface-container-low border border-outline-variant tech-card flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                      <div>
+                        <div class="font-label-mono text-[11px] text-on-surface font-bold flex items-center gap-2">
+                          <span class="w-2.5 h-2.5 rounded-full bg-warning" id="outreach-auth-card-dot"></span>
+                          <span id="outreach-auth-card-status">Gmail Not Connected</span>
+                        </div>
+                        <p class="font-label-mono text-[10px] text-on-surface-variant mt-0.5" id="outreach-auth-card-desc">
+                          Requires one-time OAuth authorization (<code>https://www.googleapis.com/auth/gmail.send</code>).
+                        </p>
+                      </div>
+
+                      <div class="flex gap-2">
+                        <button type="button" id="btn-outreach-connect-gmail" class="px-3.5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] font-bold uppercase hover:bg-primary hover:text-background transition-all">
+                          CONNECT GMAIL
+                        </button>
+                        <button type="button" id="btn-outreach-disconnect-gmail" class="px-3 py-2 bg-surface-container-high border border-outline-variant text-on-surface-variant font-label-mono text-[11px] uppercase hover:bg-error/20 hover:text-error transition-all hidden">
+                          DISCONNECT
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Options: Attach Resume & Log to Tracker -->
+                    <div class="space-y-2 pt-2">
+                      <label class="flex items-center gap-2 cursor-pointer font-label-mono text-[11.5px] text-on-surface">
+                        <input type="checkbox" id="outreach-attach-resume-checkbox" checked class="accent-primary"/>
+                        <span>Attach current resume as text attachment</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer font-label-mono text-[11.5px] text-on-surface">
+                        <input type="checkbox" id="outreach-log-tracker-checkbox" checked class="accent-primary"/>
+                        <span>Automatically log this transmission into Job Tracker</span>
+                      </label>
+                    </div>
+
+                    <!-- Explicit Send Button -->
+                    <button type="button" id="btn-send-outreach" class="w-full py-4 bg-accent/10 border border-accent text-accent font-label-mono text-[13px] font-bold uppercase tracking-widest hover:bg-accent hover:text-background transition-all glow-accent flex items-center justify-center gap-2">
+                      <span class="material-symbols-outlined text-[20px]">send</span>
+                      <span>SEND APPLICATION VIA GMAIL</span>
+                    </button>
+
+                    <!-- Send Progress / Success Card -->
+                    <div id="outreach-send-result-card" class="p-4 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] hidden">
+                      <div class="flex items-center gap-2 text-success font-bold mb-2">
+                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        <span id="outreach-status-heading">APPLICATION TRANSMITTED VIA GMAIL API ✓</span>
+                      </div>
+                      <div class="space-y-1 text-on-surface-variant text-[10.5px]">
+                        <div>Gmail Message ID: <span id="outreach-result-msg-id" class="text-on-surface font-mono">--</span></div>
+                        <div>Sent Timestamp: <span id="outreach-result-timestamp" class="text-on-surface">--</span></div>
+                        <div>Confirmed Recipient: <span id="outreach-result-recipient" class="text-on-surface">--</span></div>
+                      </div>
+                      <div class="mt-3 pt-2 border-t border-outline-variant/30 flex gap-3">
+                        <button type="button" id="btn-outreach-goto-tracker" class="px-3 py-1.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[10.5px] uppercase hover:bg-secondary/20 transition-all">
+                          VIEW IN JOB TRACKER ➔
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 6: Job Tracker -->
+        <!-- ================================================================== -->
+        <section id="tab-jobs" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant/30 pb-4">
+              <div>
+                <h1 class="font-headline-lg text-headline-lg text-on-surface">JOB_TRACKER_SYS</h1>
+                <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// MONITORING ACTIVE ENGAGEMENTS & FOLLOW-UP TIMELINES</p>
+              </div>
+              <button id="btn-open-job-modal" class="px-5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-label-mono hover:bg-primary/20 transition-all glow-primary flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>LOG_NEW_APPLICATION</span>
+              </button>
+            </div>
+
+            <!-- Overdue Banner -->
+            <div id="jobs-alert-banner" class="alert-banner warning-banner hidden p-4 border border-warning/40 bg-warning/10 text-warning flex items-center gap-3 tech-card">
+              <span class="material-symbols-outlined text-[24px]">notifications_active</span>
+              <div class="font-label-mono text-[12px]" id="jobs-alert-text"></div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-primary">
+                <div class="font-label-mono text-on-surface-variant mb-1 text-[11px]">TOTAL_TRANSMISSIONS</div>
+                <div class="font-display-lg text-[36px] text-primary text-glow-primary font-bold" id="stat-total-jobs">0</div>
+                <div class="mt-3 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-primary w-full opacity-50"></div>
+                </div>
+              </div>
+
+              <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-secondary">
+                <div class="font-label-mono text-secondary mb-1 text-[11px]">ACTIVE_PROCESSES</div>
+                <div class="font-display-lg text-[36px] text-secondary text-glow-secondary font-bold" id="stat-active-jobs">0</div>
+                <div class="mt-3 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary w-1/2 shadow-[0_0_8px_#00eefc]"></div>
+                </div>
+              </div>
+
+              <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-secondary">
+                <div class="font-label-mono text-secondary mb-1 text-[11px]">CONFIRMED_OFFERS</div>
+                <div class="font-display-lg text-[36px] text-secondary text-glow-secondary font-bold" id="stat-offer-jobs">0</div>
+                <div class="mt-3 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary w-full shadow-[0_0_8px_#00eefc]"></div>
+                </div>
+              </div>
+
+              <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-error">
+                <div class="font-label-mono text-error mb-1 text-[11px]">REJECTED</div>
+                <div class="font-display-lg text-[36px] text-error font-bold" id="stat-rejected-jobs">0</div>
+                <div class="mt-3 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-error w-full opacity-70"></div>
+                </div>
+              </div>
+
+              <div class="bg-surface-container border border-outline-variant p-5 tech-card glow-error">
+                <div class="font-label-mono text-error mb-1 text-[11px]">FOLLOW_UPS_DUE</div>
+                <div class="font-display-lg text-[36px] text-error font-bold" id="stat-due-jobs">0</div>
+                <div class="mt-3 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-error w-1/3"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controls Bar -->
+            <div class="flex flex-col md:flex-row gap-3 justify-between items-center bg-surface-container-low p-3 border border-outline-variant tech-card">
+              <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/50 text-sm">search</span>
+                <input type="text" id="job-search-input" class="w-full pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant text-primary font-label-mono text-label-mono focus:border-primary focus:outline-none placeholder:text-on-surface-variant/50" placeholder="SEARCH_ENTITIES..."/>
+              </div>
+
+              <div class="flex gap-2 w-full md:w-auto">
+                <select id="job-status-filter" class="p-2 bg-surface-container border border-outline-variant font-label-mono text-[12px] text-on-surface">
+                  <option value="all">ALL STATUSES</option>
+                  <option value="applied">APPLIED</option>
+                  <option value="interview">INTERVIEWING</option>
+                  <option value="offer">OFFER</option>
+                  <option value="rejected">REJECTED</option>
+                  <option value="no_response">NO RESPONSE</option>
+                  <option value="due">DUE FOLLOW-UP</option>
+                </select>
+                <select id="job-sort-select" class="p-2 bg-surface-container border border-outline-variant font-label-mono text-[12px] text-on-surface">
+                  <option value="newest">NEWEST APPLIED</option>
+                  <option value="oldest">OLDEST APPLIED</option>
+                  <option value="followup">FOLLOW-UP DATE</option>
+                  <option value="score">MATCH SCORE</option>
+                  <option value="company">COMPANY (A-Z)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Jobs List Container -->
+            <div class="space-y-4" id="jobs-list"></div>
+          </div>
+        </section>
+
+        <!-- ================================================================== -->
+        <!-- Tab 7: API Swagger -->
+        <!-- ================================================================== -->
+        <section id="tab-docs" class="tab-pane h-full overflow-y-auto p-4 md:p-6">
+          <div class="max-w-[1440px] mx-auto space-y-6 pb-12">
+            <div class="border-b border-outline-variant/30 pb-4">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">API_SWAGGER_EXPLORER</h2>
+              <p class="font-label-mono text-label-mono text-on-surface-variant mt-1">// FASTAPI OPENAPI INTERACTIVE DOCUMENTATION</p>
+            </div>
+
+            <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-secondary">
+              <p class="font-body-md text-on-surface mb-4">
+                Access the live interactive Swagger UI explorer directly embedded or open in a separate window:
+              </p>
+              <div class="flex gap-4">
+                <a href="/docs" target="_blank" class="px-5 py-2.5 bg-primary/10 border border-primary text-primary font-label-mono text-[12px] uppercase hover:bg-primary hover:text-background transition-all glow-primary inline-flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                  <span>OPEN /DOCS IN NEW TAB</span>
+                </a>
+                <a href="/openapi.json" target="_blank" class="px-5 py-2.5 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[12px] uppercase hover:bg-secondary/20 transition-all inline-flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">code</span>
+                  <span>OPENAPI.JSON</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="w-full h-[600px] border border-outline-variant tech-card overflow-hidden">
+              <iframe src="/docs" class="w-full h-full border-none"></iframe>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <!-- Job Modal -->
+  <div id="job-modal" class="modal-overlay hidden fixed inset-0 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary w-full max-w-lg">
+      <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3 mb-4">
+        <h3 class="font-headline-lg text-[18px] text-primary uppercase">// LOG_APPLICATION</h3>
+        <button id="btn-close-modal" class="text-on-surface-variant hover:text-error">✕</button>
+      </div>
+
+      <form id="job-form" class="space-y-4">
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Target Entity (Company)*</label>
+          <input type="text" id="job-company" required class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Acme Systems"/>
+        </div>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Role Designation*</label>
+          <input type="text" id="job-role" required class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="e.g. Senior AI Engineer"/>
+        </div>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Job URL</label>
+          <input type="url" id="job-url" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="https://..."/>
+        </div>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Follow-up Window (Days)</label>
+          <input type="number" id="job-followup" value="7" min="1" max="60" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface"/>
+        </div>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Technical Notes / Salary / Referral</label>
+          <textarea id="job-notes" rows="3" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[11px] text-on-surface" placeholder="Referred by..., Target base $175k..."></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" id="btn-cancel-modal" class="px-4 py-2 border border-outline-variant text-on-surface font-label-mono text-[11px] uppercase">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] uppercase glow-primary">Save Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal-overlay hidden fixed inset-0 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-secondary w-full max-w-md">
+      <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3 mb-4">
+        <h3 class="font-headline-lg text-[18px] text-secondary uppercase">// OPERATOR_PROFILE</h3>
+        <button id="btn-close-profile-modal" class="text-on-surface-variant hover:text-error">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Active Operator ID</label>
+          <div class="flex gap-2">
+            <input type="text" id="profile-current-id" readonly class="flex-1 p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-primary"/>
+            <button id="btn-copy-user-id" class="px-3 py-2 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase">Copy</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Switch / Restore ID</label>
+          <input type="text" id="profile-switch-id" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="Enter existing user ID..."/>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <button id="btn-apply-switch-user" class="w-full py-2 bg-secondary/10 border border-secondary text-secondary font-label-mono text-[11px] uppercase hover:bg-secondary/20">Apply ID Switch</button>
+          <button id="btn-create-new-user" class="w-full py-2 border border-outline-variant text-on-surface font-label-mono text-[11px] uppercase hover:border-primary">Generate Fresh Identity</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Memory Modal -->
+  <div id="edit-memory-modal" class="modal-overlay hidden fixed inset-0 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary w-full max-w-md">
+      <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3 mb-4">
+        <h3 class="font-headline-lg text-[18px] text-primary uppercase">// EDIT_MEMORY_RECORD</h3>
+        <button id="btn-close-edit-memory" class="text-on-surface-variant hover:text-error">✕</button>
+      </div>
+
+      <form id="edit-memory-form" class="space-y-4">
+        <input type="hidden" id="edit-memory-id"/>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Fact / Knowledge Content</label>
+          <textarea id="edit-memory-content" rows="4" required class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface"></textarea>
+        </div>
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Importance Weight (0.1 - 1.0)</label>
+          <input type="number" id="edit-memory-importance" step="0.1" min="0.1" max="1.0" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface"/>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" id="btn-cancel-edit-memory" class="px-4 py-2 border border-outline-variant text-on-surface font-label-mono text-[11px] uppercase">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] uppercase glow-primary">Save Memory</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-overlay hidden fixed inset-0 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface-container border border-outline-variant p-6 tech-card glow-primary w-full max-w-lg">
+      <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3 mb-4">
+        <h3 class="font-headline-lg text-[18px] text-primary uppercase">// AI_ENGINE_CONFIGURATION</h3>
+        <button id="btn-close-settings" class="text-on-surface-variant hover:text-error">✕</button>
+      </div>
+
+      <form id="settings-form" class="space-y-4">
+        <div>
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Primary LLM Engine</label>
+          <select id="settings-llm-provider" class="w-full p-2.5 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface">
+            <option value="groq">Groq (Llama-3.3-70b-versatile) — Free & Fast</option>
+            <option value="anthropic">Anthropic (Claude-3.5-Sonnet)</option>
+          </select>
+        </div>
+
+        <div id="groq-key-group">
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Groq API Key</label>
+          <input type="password" id="settings-groq-key" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="gsk_..."/>
+          <p class="font-label-mono text-[10px] text-on-surface-variant mt-1">Get free key at <a href="https://console.groq.com/keys" target="_blank" class="text-secondary underline">console.groq.com/keys</a></p>
+        </div>
+
+        <div id="anthropic-key-group" class="hidden">
+          <label class="font-label-mono text-[11px] text-on-surface-variant block mb-1 uppercase">Anthropic API Key</label>
+          <input type="password" id="settings-anthropic-key" class="w-full p-2 bg-surface-container-low border border-outline-variant font-label-mono text-[12px] text-on-surface" placeholder="sk-ant-..."/>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3">
+          <button type="button" id="btn-cancel-settings" class="px-4 py-2 border border-outline-variant text-on-surface font-label-mono text-[11px] uppercase">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-primary/10 border border-primary text-primary font-label-mono text-[11px] uppercase glow-primary">Save Engine Keys</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Cyber Bottom Navigation Bar -->
+  <nav id="mobile-bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container/95 backdrop-blur-lg border-t border-outline-variant/40 flex items-center justify-around z-40 px-1 select-none shadow-[0_-4px_20px_rgba(0,0,0,0.6)]">
+    <button class="mobile-nav-btn active flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-dashboard">
+      <span class="material-symbols-outlined text-[19px]">dashboard</span>
+      <span>DASH</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-chat">
+      <span class="material-symbols-outlined text-[19px]">smart_toy</span>
+      <span>AI</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-matcher">
+      <span class="material-symbols-outlined text-[19px]">description</span>
+      <span>MATCH</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-ats">
+      <span class="material-symbols-outlined text-[19px]">verified_user</span>
+      <span>ATS</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-authenticity">
+      <span class="material-symbols-outlined text-[19px]">security</span>
+      <span>AUTH</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-insights">
+      <span class="material-symbols-outlined text-[19px]">domain</span>
+      <span>INTEL</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-outreach">
+      <span class="material-symbols-outlined text-[19px]">send</span>
+      <span>EMAIL</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center text-[9.5px] font-label-mono gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-1" data-tab="tab-jobs">
+      <span class="material-symbols-outlined text-[19px]">work</span>
+      <span>JOBS</span>
+    </button>
+  </nav>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-20 md:bottom-6 right-4 md:right-6 flex flex-col gap-2 z-50 pointer-events-none"></div>
+
+  <!-- Core JavaScript -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
