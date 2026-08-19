@@ -4,8 +4,8 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: pip install --upgrade pip && pip install -r memora/requirements.txt
-    startCommand: cd memora && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
+    startCommand: python run.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
@@ -14,6 +14,6 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
-        value: llama-3.3-70b-versatile
+        value: groq/compound-mini
       - key: DATABASE_URL
         value: sqlite:///./memora.db
