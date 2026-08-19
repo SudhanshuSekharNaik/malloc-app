@@ -17,13 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /app
 
-# Install dependencies from memora/requirements.txt
-COPY memora/requirements.txt .
+# Install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy all application files
-COPY memora /app
+# Copy application code
+COPY app /app/app
+COPY run.py /app/
+COPY streamlit_app.py /app/
 
 # Ensure data directory exists
 RUN mkdir -p /app/data && chmod 777 /app/data
