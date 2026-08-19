@@ -85,10 +85,15 @@ def root(request: Request):
     """Serves the rich web UI for browsers, or API status for JSON clients."""
     accept_header = request.headers.get("accept", "")
     index_file = STATIC_DIR / "index.html"
+    no_cache_headers = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    }
     if "text/html" in accept_header and index_file.exists():
-        return FileResponse(index_file)
+        return FileResponse(index_file, headers=no_cache_headers)
     if index_file.exists():
-        return FileResponse(index_file)
+        return FileResponse(index_file, headers=no_cache_headers)
     return {
         "name": "malloc() API",
         "status": "online",
