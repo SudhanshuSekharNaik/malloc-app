@@ -1,268 +1,446 @@
-⚡ Malloc() — AI Career & Intelligence OS
-
-<p align="center"><strong>An AI-powered career operating system combining long-term memory, GenAI, RAG, resume intelligence, ATS analysis, job-authenticity detection, company intelligence, personalized outreach, and application tracking.</strong></p>
+Malloc() — AI Career & Intelligence OS
 
 <p align="center">
-<a href="https://malloc-app.onrender.com/">🌐 Live Demo</a> •
-<a href="https://malloc-app.onrender.com/docs">📚 API Docs</a> •
-<a href="https://github.com/SudhanshuSekharNaik/malloc-app">💻 GitHub</a>
+  <b>A personal AI career operating system for resume intelligence, job analysis, company research, job-scam detection, personalized outreach, long-term memory, and application tracking.</b>
 </p>
 
-🚀 What is Malloc()?
+<p align="center">
+  <a href="https://malloc-app.onrender.com/">Live Demo</a> ·
+  <a href="https://malloc-app.onrender.com/docs">API Docs</a> ·
+  <a href="https://github.com/SudhanshuSekharNaik/malloc-app">GitHub</a>
+</p>
 
-Malloc() is a unified AI career-intelligence platform for managing the job-search lifecycle from one workspace.
+Overview
 
-Instead of building isolated tools for resume analysis, ATS checking, job research, fraud detection, email drafting, and application tracking, Malloc() connects them into a single workflow.
+Malloc() is an AI-powered career intelligence platform that brings the major stages of a job search into one system.
 
-Job / Resume Input
-       │
-       ▼
-┌──────────────────────────────┐
-│     MALLOC() CAREER OS       │
-├──────────────────────────────┤
-│ AI Assistant + Memory Vault  │
-│ Resume Matcher               │
-│ ATS Parseability Audit       │
-│ Job Authenticity Shield      │
-│ Company Intelligence         │
-│ AI Outreach + Gmail OAuth    │
-│ Job Tracker + Follow-ups     │
-└──────────────────────────────┘
-       │
-       ▼
-Evidence-grounded career decisions
+Instead of treating resume matching, ATS analysis, company research, job authenticity, application drafting, and application tracking as separate tools, Malloc() connects them into an end-to-end workflow.
 
-Principle: use AI to reduce repetitive career work while keeping important decisions and external actions under user control.
+                         MALLOC()
+                 AI CAREER INTELLIGENCE OS
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ▼                     ▼                     ▼
+   Understand Me        Understand Jobs      Understand Companies
+        │                     │                     │
+        └──────────────┬──────┴──────────────┘
+                       ▼
+              Evaluate Opportunities
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+       Resume         ATS       Authenticity
+       Matching      Audit        Shield
+          │            │            │
+          └────────────┼────────────┘
+                       ▼
+                Prepare Application
+                       │
+                       ▼
+                 AI Outreach
+                       │
+                       ▼
+                 Job Tracker
 
-🌐 Live Application
+Core principle
 
-Live Demo: https://malloc-app.onrender.com/
+AI handles repetitive analysis and preparation; the user remains in control of important decisions and external actions.
 
-The deployed application exposes the AI Assistant, Memory Vault, Resume Matcher, ATS Checker, Job Authenticity Audit, Company Insights, Apply via Email, Job Tracker, and FastAPI Swagger/OpenAPI explorer.
+Live Application
 
-✨ Core Capabilities
+Resource
 
-1. 🧠 AI Assistant + Long-Term Memory
+Link
 
-Malloc() provides a conversational AI interface with persistent structured memory.
+Live Website
 
-Capabilities:
+https://malloc-app.onrender.com/
 
-Text conversations
+Swagger / OpenAPI
 
-Voice input support
+https://malloc-app.onrender.com/docs
 
-Image attachment / captioning support
+GitHub Repository
+
+https://github.com/SudhanshuSekharNaik/malloc-app
+
+Features
+
+1. AI Assistant & Memory Vault
+
+Malloc() includes a conversational AI assistant with a separate long-term memory layer.
+
+Capabilities
+
+Conversational AI
+
+Voice input
+
+Image attachment / captioning
 
 Structured memory extraction
 
-Memory search and retrieval
+Memory retrieval
 
-Long-term facts, skills, experiences, and preferences
+Skills, facts, experiences, and preferences
+
+Vector-based retrieval
+
+Persistent user context
 
 Pydantic validation for structured LLM output
 
 Memory architecture
 
-Conversation History
-        │ extraction
-        ▼
-Structured Memory
- ├── Facts
- ├── Skills
- ├── Experiences
- └── Preferences
-        │
-        ▼
-Vector Retrieval / RAG
-        │
-        ▼
-Relevant Context → LLM
+Conversation
+     │
+     ▼
+LLM Response
+     │
+     ▼
+Memory Extraction
+     │
+     ▼
+Structured Entities
+ ┌───┼───────────────┐
+ ▼   ▼               ▼
+Facts Skills    Experiences
+     │
+     ▼
+Vector Index / Retrieval
+     │
+     ▼
+Relevant Context
+     │
+     ▼
+Future AI Responses
 
-Conversation history and long-term memory are deliberately separated. The system does not treat every conversational message as permanent memory.
+Conversation history and long-term memory are deliberately treated as separate concepts.
 
-Reliability rule: memory extraction must never break the main chat flow. Extraction is best-effort and invalid model output is rejected rather than trusted blindly.
+A key reliability rule is:
 
-2. 🎯 Resume Matcher & AI Resume Editing
+Memory extraction must never break the main chat experience.
 
-The Resume Matcher compares a candidate resume with a target job specification and produces an explainable fit analysis.
+Memory extraction runs as a best-effort operation and structured output is validated before persistence.
 
-Resume → Profile ─────────────┐
-                              ├→ Fit Analysis → Skill Gaps
-Job Description → Extraction ┘                    │
-                                                  ▼
-                                      Tailoring Recommendations
-                                                  │
-                                                  ▼
-                                           Suggested Edits
-                                                  │
-                                                  ▼
-                                           Human Review
+2. Resume Matcher
 
-Features:
+The Resume Matcher compares a candidate profile against a target job description and identifies technical and experience gaps.
 
-Resume upload and profile storage
+Workflow
 
-Job description input
+Resume
+  │
+  ├───────────────┐
+  ▼               ▼
+Profile        Job Description
+  │               │
+  └───────┬───────┘
+          ▼
+     Fit Analysis
+          │
+   ┌──────┴───────┐
+   ▼              ▼
+Matched        Missing /
+Skills         Critical Gaps
+   │              │
+   └──────┬───────┘
+          ▼
+Tailoring Recommendations
+          │
+          ▼
+Suggested Resume Edits
+          │
+          ▼
+     User Review
+
+Features
+
+Resume upload
+
+Job description ingestion
 
 Semantic fit scoring
 
-Matched keyword extraction
+Skill extraction
 
-Critical skill-gap detection
+Keyword matching
+
+Critical-gap detection
 
 Seniority-fit analysis
 
-Tailoring recommendations
-
-Per-bullet resume rewriting
+Resume bullet rewriting
 
 Tailored outreach pitch
 
-Job-tracker integration
+Application tracker integration
 
 Anti-fabrication guardrail
 
-AI suggestions are validated against the source resume. Unsupported metrics, numbers, percentages, tools, technologies, and claims are flagged rather than silently inserted. Suggestions remain opt-in and can be accepted or dismissed individually.
+Generated resume edits are checked against the original resume before being accepted.
 
-3. 📄 ATS Parseability Audit
+The system is designed to avoid introducing unsupported:
 
-The ATS Checker evaluates whether a resume is structurally readable by Applicant Tracking Systems, independently of a specific job description.
+Metrics
 
-Hybrid scoring
+Numbers
 
-Resume
-  ├── Deterministic Rules
-  │    ├── File format
-  │    ├── Section headers
-  │    ├── Contact information
-  │    ├── Tables / layout
-  │    ├── Filename hygiene
-  │    └── Length / density
-  │
-  └── NLP Signals
-       ├── Entity extraction
-       └── Role/domain classification
-                │
-                ▼
-          ATS Parseability Score
-                │
-                ▼
-       Prioritized Recommendations
+Percentages
 
-Checks include PDF/TXT/DOCX compatibility, standard sections, contact detectability, LinkedIn/GitHub links, single-column layout, table risks, resume length, bullet scannability, entity extraction, and role coherence.
+Technologies
 
-4. 🛡️ Job Authenticity Shield
+Tools
 
-A hybrid security engine evaluates job postings for employment-scam indicators.
+Experience claims
+
+Every suggested edit can be accepted or dismissed by the user.
+
+3. ATS Parseability Audit
+
+The ATS Checker focuses on whether a resume is structurally readable by Applicant Tracking Systems.
+
+It combines deterministic rules with NLP-based signals.
+
+Architecture
+
+                     Resume
+                       │
+             ┌─────────┴─────────┐
+             ▼                   ▼
+      Deterministic Rules     NLP Signals
+             │                   │
+       ┌─────┼─────┐        ┌────┴────┐
+       ▼     ▼     ▼        ▼         ▼
+    Format Sections Layout  Entities  Role
+    Contact Length  Bullets          Signals
+             │                   │
+             └─────────┬─────────┘
+                       ▼
+                ATS Parseability
+                       │
+                       ▼
+             Priority Recommendations
+
+Checks include
+
+File format compatibility
+
+Standard ATS section headers
+
+Contact information detection
+
+LinkedIn / GitHub detection
+
+Single-column layout
+
+Table/layout risks
+
+Resume length
+
+Bullet-point scannability
+
+Skill/entity extraction
+
+Job-role/domain signals
+
+4. Job Authenticity Shield
+
+A three-layer hybrid system evaluates potential employment-scam signals in job postings.
 
 Job Posting
      │
      ▼
-Layer 1 — Rule-based red flags
-     │
-     ▼
-Layer 2 — BERT classification
-     │
-     ▼
-Layer 3 — RAG + LLM reasoning
-     │
-     ▼
-Risk Score + Evidence
+┌─────────────────────────┐
+│ Layer 1                 │
+│ Rule-Based Red Flags    │
+└────────────┬────────────┘
+             ▼
+┌─────────────────────────┐
+│ Layer 2                 │
+│ BERT ML Classification  │
+└────────────┬────────────┘
+             ▼
+┌─────────────────────────┐
+│ Layer 3                 │
+│ RAG + LLM Reasoning     │
+└────────────┬────────────┘
+             ▼
+      Risk Assessment
+      + Supporting Evidence
 
-Layer 1 — deterministic checks
+Rule-based signals
 
-Detects signals including suspicious/free contact domains, Telegram/WhatsApp recruitment redirects, upfront payment requests, equipment-check patterns, URL shorteners, suspicious compensation language, and structural anomalies.
+The system can evaluate signals including:
 
-Layer 2 — ML signal
+Suspicious contact channels
 
-A BERT-based fake-vs-real job-posting classifier provides a secondary classification signal.
+Telegram / WhatsApp recruitment
 
-Layer 3 — RAG reasoning
+Upfront payment requests
 
-A curated employment-fraud knowledge base is embedded and searched using vector similarity. Retrieved patterns are passed to the reasoning layer to produce evidence-grounded risk analysis.
+Equipment-purchase patterns
 
-Safety framing: authenticity results are risk indicators and decision-support signals, not definitive declarations that a company or posting is fraudulent.
+URL-shortener usage
 
-5. 🏢 Company Intelligence
+Suspicious compensation language
 
-Company Insights provides multi-layer analysis of a company and potential role.
+Structural anomalies
+
+ML layer
+
+A BERT-based classifier provides an additional fake-vs-real job-posting signal.
+
+RAG layer
+
+Fraud-related knowledge is embedded into a vector index and retrieved for evidence-grounded reasoning.
+
+Important limitation
+
+The authenticity result is a risk indicator, not definitive proof that a job or company is fraudulent.
+
+5. Company Intelligence
+
+Company Insights combines classification, sentiment analysis, and structured reasoning to generate a company-specific preparation brief.
+
+Pipeline
 
 Company / Job Information
           │
           ▼
-Zero-Shot Size Classification
+Company Size
           │
           ▼
 Industry Classification
           │
           ▼
-Culture / Sentiment Analysis
+Culture / Sentiment
           │
           ▼
 Interview Intelligence
+          │
+          ▼
+Preparation Blueprint
 
 Models
 
-facebook/bart-large-mnli — zero-shot company-size classification
+Model
 
-sampathkethineedi/industry-classification — industry classification
+Purpose
 
-distilbert-base-uncased-finetuned-sst-2-english — sentiment analysis
+facebook/bart-large-mnli
+
+Zero-shot company-size classification
+
+sampathkethineedi/industry-classification
+
+Industry classification
+
+distilbert-base-uncased-finetuned-sst-2-english
+
+Sentiment analysis
 
 Output
 
 Company-size classification
 
-Industry category
+Industry classification
 
 Confidence signals
 
 Sentiment breakdown
 
-Praised and criticized aspects
+Positive / critical aspects
 
 Interview focus areas
 
-Hiring-process preparation
+Hiring-process stages
 
 Targeted preparation tips
 
-Grounding/disagreement warnings when signals conflict
+6. AI Outreach & Gmail
 
-6. ✉️ AI Outreach + Gmail
+Malloc() converts job information into a personalized, reviewable application workflow.
 
-Malloc() converts informal job posts into structured, resume-grounded application workflows.
-
-Informal Job Post
-      ↓
+Job Posting
+    │
+    ▼
 Parse Posting
-      ↓
-Extract Company / Role / Contact
-      ↓
-Select Resume Profile
-      ↓
+    │
+    ▼
+Select Role
+    │
+    ▼
 Draft Personalized Email
-      ↓
+    │
+    ▼
 Fabrication Audit
-      ↓
+    │
+    ▼
 Human Review
-      ↓
+    │
+    ▼
 Gmail OAuth
-      ↓
+    │
+    ▼
 User-Initiated Send
-      ↓
+    │
+    ▼
 Job Tracker
 
-The Gmail integration uses official Gmail API authorization, requires user authorization, keeps the draft editable, runs a fabrication audit, and does not silently auto-send applications. Users explicitly initiate the send action.
+Features
 
-7. 📋 Job Tracker
+Informal job-post parsing
 
-Tracks applications and follow-up timelines.
+Role selection
 
-Applied → Interview / No Response / Offer / Rejected
+Resume-grounded email drafting
 
-Tracked fields: company, role, application date, status, follow-up date, job URL, notes, technical notes, salary/referral information, and history.
+Anti-fabrication audit
+
+Resume attachment
+
+Gmail OAuth2
+
+Application logging
+
+User-controlled sending
+
+The application is not silently auto-sent. External email transmission requires explicit user action.
+
+7. Job Tracker
+
+The Job Tracker maintains application history and follow-up timelines.
+
+Application lifecycle
+
+Applied
+  │
+  ├── Interview
+  ├── Offer
+  ├── Rejected
+  └── Follow-up
+
+Stored information
+
+Company
+
+Role
+
+Application date
+
+Status
+
+Follow-up date
+
+Job URL
+
+Notes
+
+Referral information
+
+Application history
 
 API
 
@@ -272,40 +450,50 @@ GET    /jobs/{user_external_id}/due-followups
 PATCH  /jobs/{job_id}
 DELETE /jobs/{job_id}
 
-The MVP uses pull-based follow-up checks rather than unnecessary background scheduler infrastructure.
+System Architecture
 
-🏗️ System Architecture
+┌─────────────────────────────────────────────────────┐
+│                     WEB UI                          │
+│          HTML / CSS / JavaScript / Tailwind         │
+└─────────────────────────┬───────────────────────────┘
+                          │
+                       REST/JSON
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────┐
+│                    FASTAPI                          │
+│              Unified API Gateway                    │
+│                    Python 3.11                      │
+└─────────────┬────────────────┬──────────────────────┘
+              │                │
+              ▼                ▼
+       ┌────────────┐   ┌──────────────┐
+       │   Memory   │   │  ML Pipelines│
+       │   Engine   │   │              │
+       ├────────────┤   ├──────────────┤
+       │ Extraction │   │ BERT         │
+       │ Synthesis  │   │ BART         │
+       │ Retrieval  │   │ DistilBERT   │
+       │ CRUD       │   │ Embeddings   │
+       └─────┬──────┘   └──────┬───────┘
+             │                 │
+             └────────┬────────┘
+                      ▼
+               ┌─────────────┐
+               │ LLM / RAG   │
+               │ Groq        │
+               │ Llama       │
+               │ FAISS       │
+               └──────┬──────┘
+                      │
+                      ▼
+        ┌──────────────────────────────┐
+        │ Persistence & Integrations  │
+        │ SQLAlchemy / SQLite         │
+        │ Google OAuth2 / Gmail API   │
+        └──────────────────────────────┘
 
-                     Web UI
-             Cyber HUD / Tailwind / JS
-                       │
-                    REST/JSON
-                       │
-                       ▼
-              ┌─────────────────┐
-              │     FastAPI     │
-              │ Unified Gateway │
-              │   Python 3.11  │
-              └────────┬────────┘
-                       │
-       ┌───────────────┼────────────────┐
-       ▼               ▼                ▼
- Memory Engine    ML Pipelines      LLM Engine
- Extraction       BERT/BART         Groq / Llama
- Synthesis        DistilBERT        RAG
- Retrieval        SST-2             Guardrails
-       │               │                │
-       └───────────────┼────────────────┘
-                       ▼
-             Persistence / Storage
-          SQLAlchemy ORM + SQLite
-             FAISS Vector Index
-                       │
-                       ▼
-             External Integrations
-          Gmail OAuth2 / Hugging Face
-
-🧰 Tech Stack
+Tech Stack
 
 Backend
 
@@ -323,9 +511,9 @@ Uvicorn
 
 AI / ML
 
-Groq LLM inference
+Groq
 
-Llama models
+Llama
 
 Hugging Face Transformers
 
@@ -339,13 +527,13 @@ Sentence Transformers
 
 FAISS
 
-RAG
+Retrieval-Augmented Generation
 
 Multimodal
 
-faster-whisper — speech transcription
+faster-whisper
 
-BLIP — image captioning
+BLIP
 
 Frontend
 
@@ -357,7 +545,7 @@ JavaScript
 
 Tailwind CSS
 
-Cyber-HUD themed interface
+Cyber-HUD interface
 
 Integrations
 
@@ -373,7 +561,9 @@ Deployment
 
 Render
 
-🔌 API Surface
+API Overview
+
+The FastAPI backend exposes endpoints for the major career workflows.
 
 Core
 
@@ -391,6 +581,7 @@ Resume / ATS
 
 POST /ats/check
 POST /api/ats/check
+
 POST /matcher/suggest-edits
 POST /api/resume/suggest-edits
 
@@ -400,7 +591,7 @@ POST /insights/analyze
 POST /api/company/insights
 GET  /insights/{company_name}
 
-Job Authenticity
+Authenticity
 
 POST /authenticity/check
 POST /api/jobs/authenticity-check
@@ -413,76 +604,103 @@ GET    /jobs/{user_external_id}/due-followups
 PATCH  /jobs/{job_id}
 DELETE /jobs/{job_id}
 
-Interactive API documentation: https://malloc-app.onrender.com/docs
+Interactive API documentation:
+https://malloc-app.onrender.com/docs
 
-🔐 Engineering & Safety Principles
+Engineering Principles
 
-Never allow an LLM to directly mutate the database.
+Malloc() follows explicit guardrails around AI-generated output and external actions.
 
-Validate structured LLM outputs with Pydantic.
+Principle
 
-Never fabricate resume facts.
+Implementation
 
-Keep conversation history separate from long-term memory.
+Structured AI output
 
-Do not store every conversation as memory.
+Pydantic validation
 
-Make memory deletion reliable.
+Memory isolation
 
-Keep external actions user-initiated.
+Chat history separated from long-term memory
 
-Treat fraud detection as decision support, not definitive verification.
+Anti-fabrication
 
-Fail gracefully when optional ML/model inference is unavailable.
+Resume edits checked against source facts
 
-Avoid unnecessary infrastructure in the MVP.
+User control
 
-🧪 Testing
+External email requires explicit send action
 
-The current dashboard reports 86/86 tests passing (100%).
+Fraud safety
 
-Run locally:
+Authenticity score treated as decision support
+
+Fault tolerance
+
+Optional memory/model failures do not break core flows
+
+Minimal infrastructure
+
+MVP avoids unnecessary background systems
+
+Traceability
+
+AI recommendations expose their supporting signals
+
+Testing
+
+The current system dashboard reports:
+
+86 / 86 tests passing
+100% passing
+
+Run the test suite locally:
 
 pytest tests/ -v
 
-💻 Local Development
+Local Setup
+
+1. Clone
 
 git clone https://github.com/SudhanshuSekharNaik/malloc-app.git
 cd malloc-app
-python -m venv .venv
 
-Linux / macOS
-
-source .venv/bin/activate
+2. Create a virtual environment
 
 Windows
 
+python -m venv .venv
 .venv\Scripts\activate
 
-Install dependencies:
+Linux / macOS
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+3. Install dependencies
 
 pip install -r requirements.txt
 
-Configure environment variables:
+4. Configure environment variables
 
 cp .env.example .env
 
-Typical LLM configuration:
+Configure the required credentials in .env, including the LLM provider and Gmail OAuth configuration if those features are enabled.
+
+Example:
 
 GROQ_API_KEY=your_key
 LLM_PROVIDER=groq
 
-Then start FastAPI:
+5. Start the API
 
 uvicorn app.main:app --reload
 
-Run the local UI according to the repository's configured frontend entry point.
+6. Open API documentation
 
-For the deployed application, open:
+http://127.0.0.1:8000/docs
 
-https://malloc-app.onrender.com/
-
-📁 High-Level Structure
+Project Structure
 
 malloc-app/
 │
@@ -495,69 +713,36 @@ malloc-app/
 │   └── ...
 │
 ├── tests/
+│
 ├── streamlit_app.py
 ├── requirements.txt
 ├── .env.example
-└── README.md
+├── README.md
+└── ...
 
-🎯 Why Malloc() is Different
-
-Most career tools solve one problem:
-
-Resume Analyzer
-OR
-ATS Checker
-OR
-Job Tracker
-OR
-Company Research
-OR
-Email Generator
-
-Malloc() connects these workflows:
-
-AI Assistant
-      │
-Memory Vault
-      │
-      ├── Resume Matcher
-      ├── ATS Checker
-      └── Job Authenticity
-               │
-               ▼
-       Company Intelligence
-               │
-               ▼
-          AI Outreach
-               │
-               ▼
-          Job Tracker
-
-The objective is to build a career operating system, not another standalone chatbot: AI understands the user's profile, evaluates opportunities, prepares applications, and maintains continuity across the job-search lifecycle.
-
-🗺️ Roadmap
+Roadmap
 
 Implemented
 
 AI career assistant
 
-Structured long-term memory architecture
+Structured long-term memory
 
-Memory extraction
+Memory extraction and retrieval
 
-Vector retrieval components
+Resume matcher
 
-Resume matcher and fit scoring
+Semantic fit analysis
 
-Skill-gap analysis
+Skill-gap detection
 
-AI resume edit suggestions
+AI resume edits
 
 Anti-fabrication validation
 
 ATS parseability audit
 
-BERT entity signals
+NLP entity signals
 
 Job authenticity audit
 
@@ -565,63 +750,71 @@ Rule-based fraud detection
 
 BERT fraud classification
 
-RAG fraud reasoning
+RAG-based fraud reasoning
 
 Company size classification
 
 Industry classification
 
-Culture/sentiment analysis
+Sentiment analysis
 
 Interview intelligence
 
-Personalized application email drafting
+Personalized application emails
 
 Gmail OAuth workflow
 
-User-initiated email sending
+User-controlled email sending
 
 Job application tracker
 
 Follow-up tracking
 
-Interactive Swagger/OpenAPI explorer
+Swagger / OpenAPI documentation
 
-Deployed web application
+Render deployment
 
-Future improvements
+Future
 
-Production-grade persistent vector database
+Production-grade vector database
 
-Advanced memory consolidation
+Advanced retrieval / reranking
 
-Temporal memory versioning
+Memory consolidation and versioning
 
-Explicit conflict-resolution workflows
-
-Advanced retrieval/reranking
-
-Larger evaluation benchmark suite
+More robust model evaluation benchmarks
 
 Background notification infrastructure
 
 Additional job-board integrations
 
-Production authentication / multi-user isolation
+Production-grade authentication and tenant isolation
 
-More multimodal career workflows
+Expanded multimodal career workflows
 
-⚠️ Responsible Use
+Responsible Use
 
-Malloc() provides AI-assisted career decision support. Users should review outputs, especially job-authenticity assessments, company intelligence, resume modifications, AI-generated outreach, and career recommendations.
+Malloc() is an AI-assisted career decision-support system.
 
-The system should not be treated as a definitive authority on whether a company, job posting, or career decision is legitimate or appropriate.
+Its outputs should be reviewed by the user before acting on them, especially:
 
-📌 Project Information
+Job authenticity assessments
 
-Property
+Company intelligence
 
-Value
+Resume modifications
+
+AI-generated outreach
+
+Career recommendations
+
+The system does not guarantee that a job posting is legitimate, that a company is suitable, or that a recommendation will produce a particular career outcome.
+
+Project Snapshot
+
+
+
+
 
 Project
 
@@ -641,15 +834,19 @@ FastAPI / Python
 
 AI
 
-LLM + Transformers + RAG
+LLM + NLP + RAG
 
-Database
+ML
 
-SQLAlchemy / SQLite
+BERT / BART / DistilBERT
 
 Vector Search
 
 FAISS
+
+Database
+
+SQLAlchemy / SQLite
 
 Multimodal
 
@@ -663,22 +860,26 @@ Deployment
 
 Render
 
+Testing
+
+86/86 passing
+
 License
 
 MIT
 
-👨‍💻 Author
+Author
 
 Sudhanshu Sekhar Naik
-B.Tech — Information Technology
-AI/ML Engineer • Generative AI • Backend Engineering • Computer Vision
+
+AI/ML Engineer · Generative AI · Backend Engineering · Computer Vision
 
 GitHub: https://github.com/SudhanshuSekharNaik
 
-Project: https://github.com/SudhanshuSekharNaik/malloc-app
+Malloc(): https://github.com/SudhanshuSekharNaik/malloc-app
 
 Live Demo: https://malloc-app.onrender.com/
 
-📜 License
+License
 
 This project is licensed under the MIT License.
