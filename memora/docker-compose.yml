@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  # Option 1: Unified standalone service (runs both FastAPI & Streamlit in 1 container)
+  memora:
+    build: .
+    container_name: memora-app
+    ports:
+      - "8501:8501"
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=groq
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - DATABASE_URL=sqlite:////app/data/memora.db
+      - PORT=8501
+    volumes:
+      - memora-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  memora-data:

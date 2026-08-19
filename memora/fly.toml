@@ -1,0 +1,24 @@
+app = "malloc-app"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8501"
+  LLM_PROVIDER = "groq"
+  GROQ_MODEL = "llama-3.3-70b-versatile"
+  DATABASE_URL = "sqlite:///./memora.db"
+
+[http_service]
+  internal_port = 8501
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
